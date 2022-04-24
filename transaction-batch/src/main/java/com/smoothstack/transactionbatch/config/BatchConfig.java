@@ -2,6 +2,8 @@ package com.smoothstack.transactionbatch.config;
 
 import com.smoothstack.transactionbatch.mapper.CustomFieldSetMapper;
 import com.smoothstack.transactionbatch.model.TransactRead;
+import com.smoothstack.transactionbatch.model.UserBase;
+import com.smoothstack.transactionbatch.processor.UserProcessor;
 import com.smoothstack.transactionbatch.writer.ConsoleItemWriter;
 
 import org.springframework.batch.core.Job;
@@ -14,7 +16,6 @@ import org.springframework.batch.core.launch.support.RunIdIncrementer;
 import org.springframework.batch.item.file.FlatFileItemReader;
 import org.springframework.batch.item.file.builder.FlatFileItemReaderBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.FileSystemResource;
@@ -32,10 +33,10 @@ public class BatchConfig {
 
     @Bean
     @StepScope
-    public FlatFileItemReader<TransactRead> transactionReader(
-        @Value("#{jobParameters['inputFile']}") FileSystemResource inputFile
-    ) {
+    public FlatFileItemReader<TransactRead> transactionReader() {
+        FileSystemResource inputFile = new FileSystemResource("input/test.csv");
         return new FlatFileItemReaderBuilder<TransactRead>()
+                .linesToSkip(1)
                 .name("csvflatfileitemreader")
                 .resource(inputFile)
                 .delimited()
@@ -52,8 +53,9 @@ public class BatchConfig {
         threadPoolTaskExecutor.afterPropertiesSet();
 
         return steps.get("Card Process Step")
-            .<TransactRead, TransactRead>chunk(1000)
-            .reader(transactionReader( null ))
+            .<TransactRead, UserBase>chunk(1000)
+            .reader(transactionReader())
+            .processor( new UserProcessor() )
             .writer( new ConsoleItemWriter() )
             .taskExecutor(threadPoolTaskExecutor)
             .build();

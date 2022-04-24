@@ -30,7 +30,7 @@ public class CustomFieldSetMapper implements FieldSetMapper<TransactRead> {
         long merchant = fieldSet.readLong("merchant");
         String city = fieldSet.readString("city");
         String state = fieldSet.readString("state");
-        int zip = (int)fieldSet.readDouble("zip");
+        String zip = fieldSet.readString("zip");
         int mcc = fieldSet.readInt("mcc");
         String errors = fieldSet.readString("errors");
 

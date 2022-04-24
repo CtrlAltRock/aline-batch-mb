@@ -23,7 +23,7 @@ public class TransactRead {
     private long merchant;
     private String city;
     private String state;
-    private int zip;
+    private String zip;
     private int mcc;
     private String errors;
     private boolean isFraud;
