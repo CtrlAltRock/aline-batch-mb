@@ -35,17 +35,17 @@ public class UserGenerator {
                     String firstName = faker.name().firstName();
                     String middleName = faker.name().firstName();
                     String lastName = faker.name().lastName();
-                            
+
                     Date dateOfBirth = faker.date().past(80 * 365, 18 * 365, TimeUnit.DAYS);
-                            
+
                     String email = firstName + "." + lastName + "@smoothstack.gov";
-                            
+
                     String phoneNumber = faker.phoneNumber().cellPhone();
-                            
+
                     String[] addr = faker.address().fullAddress().split(", ");
                     String[] stuff = addr[2].split(" ");
-                            
-                            
+
+
                     UserBase newUser = new UserBase(
                         id,
                         firstName,
@@ -59,15 +59,14 @@ public class UserGenerator {
                         stuff[0],
                         stuff[1]
                     );
-                            
+
                     context.put(id, newUser);
-                            
+
                     return Optional.of(newUser);
                 }
             }
         }
         
-        return Optional.empty();
-        
+        return Optional.empty();        
     }
 }
