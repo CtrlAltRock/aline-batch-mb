@@ -3,12 +3,14 @@ package com.smoothstack.transactionbatch.generator;
 import java.util.AbstractMap;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicLong;
 
 import com.smoothstack.transactionbatch.model.CardBase;
 import com.vangogiel.luhnalgorithms.LuhnAlgorithms;
 
 public class CardGenerator {
     private AbstractMap<Long, AbstractMap<Long, String>> cardList = new ConcurrentHashMap<>();
+    private static AtomicLong cardCount = new AtomicLong(0);
     private static CardGenerator INSTANCE = null;
 
     private CardGenerator() {}
@@ -26,23 +28,33 @@ public class CardGenerator {
 
     public Optional<CardBase> generateCard(long user, long card) {
         if (!cardList.containsKey(user) || !cardList.get(user).containsKey(card)) {
-            synchronized (this) {
-                if (!cardList.containsKey(user) || !cardList.get(user).containsKey(card)) {
-                    String cardNumber = Long.toString(LuhnAlgorithms.generateRandomLuhn(16));
+            synchronized (CardGenerator.class) {
+                if (!cardList.containsKey(user)) {
+                    String cardNumber = luhnCard();
 
-                    CardBase newCard = new CardBase(user, card, cardNumber);
+                    cardList.put(user, new ConcurrentHashMap<>());;
 
-                    ConcurrentHashMap<Long, String> createdCard = new ConcurrentHashMap<>();
-                    createdCard.put(card, cardNumber);
+                    cardList.get(user).put(card, cardNumber);
 
-                    cardList.put(user, createdCard);
+                    return Optional.of( new CardBase(cardCount.incrementAndGet(), user, cardNumber) );
+                } else if (!cardList.get(user).containsKey(card)) {
+                    String cardNumber = luhnCard();
 
-                    return Optional.of(newCard);
-                }    
+                    cardList.get(user).put(card, cardNumber);
+
+                    return Optional.of( new CardBase(cardCount.incrementAndGet(), user, cardNumber) );
+                }
             }
         }
 
         return Optional.empty(); 
     }
 
+    public String luhnCard() {
+        String cardNumber = Long.toString(LuhnAlgorithms.generateRandomLuhn(16));
+
+        while (cardNumber.length() < 16) cardNumber = "0" + cardNumber;
+
+        return cardNumber;
+    }
 }

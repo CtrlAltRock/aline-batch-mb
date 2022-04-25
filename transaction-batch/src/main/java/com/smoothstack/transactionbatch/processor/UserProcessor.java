@@ -11,7 +11,6 @@ import org.springframework.batch.item.ItemProcessor;
 public class UserProcessor implements ItemProcessor<TransactRead, UserBase> {
     private static UserGenerator userGenerator = UserGenerator.getInstance();
 
-
     @Override
     public UserBase process(TransactRead item) throws Exception {
         Optional<UserBase> user = userGenerator.generateUser(item.getUser());

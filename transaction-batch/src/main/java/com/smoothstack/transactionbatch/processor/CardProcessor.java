@@ -9,7 +9,7 @@ import com.smoothstack.transactionbatch.model.TransactRead;
 import org.springframework.batch.item.ItemProcessor;
 
 public class CardProcessor implements ItemProcessor<TransactRead, CardBase> {
-    private CardGenerator cardGenerator = CardGenerator.getInstance();
+    private static CardGenerator cardGenerator = CardGenerator.getInstance();
 
     @Override
     public CardBase process(TransactRead item) throws Exception {

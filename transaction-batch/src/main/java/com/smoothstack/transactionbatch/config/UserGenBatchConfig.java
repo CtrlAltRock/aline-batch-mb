@@ -6,6 +6,7 @@ import com.smoothstack.transactionbatch.mapper.CustomFieldSetMapper;
 import com.smoothstack.transactionbatch.model.TransactRead;
 import com.smoothstack.transactionbatch.model.UserBase;
 import com.smoothstack.transactionbatch.processor.UserProcessor;
+import com.smoothstack.transactionbatch.writer.ConsoleItemWriter;
 
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
@@ -25,9 +26,9 @@ import org.springframework.core.io.FileSystemResource;
 import org.springframework.oxm.xstream.XStreamMarshaller;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
-@EnableBatchProcessing
-@Configuration
-public class UserBatchConfig {
+//@EnableBatchProcessing
+//@Configuration
+public class UserGenBatchConfig {
     
     @Autowired
     private JobBuilderFactory jobs;
@@ -38,7 +39,7 @@ public class UserBatchConfig {
     @Bean
     @StepScope
     public FlatFileItemReader<TransactRead> transactionReader() {
-        FileSystemResource inputFile = new FileSystemResource("input/test2.csv");
+        FileSystemResource inputFile = new FileSystemResource("input/card_transaction.v1.csv");
         
         return new FlatFileItemReaderBuilder<TransactRead>()
                 .linesToSkip(1)
@@ -83,10 +84,10 @@ public class UserBatchConfig {
         threadPoolTaskExecutor.afterPropertiesSet();
 
         return steps.get("User Process Step")
-            .<TransactRead, UserBase>chunk(10)
+            .<TransactRead, UserBase>chunk(10000)
             .reader(transactionReader())
             .processor( new UserProcessor() )
-            .writer(userXmlWriter())
+            .writer(new ConsoleItemWriter() )
             .allowStartIfComplete(true)
             .taskExecutor(threadPoolTaskExecutor)
             .build();
