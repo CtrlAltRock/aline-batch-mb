@@ -1,24 +1,20 @@
 package com.smoothstack.transactionbatch.generator;
 
+import java.util.AbstractMap;
 import java.util.Date;
 import java.util.Optional;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 
 import com.github.javafaker.Faker;
 import com.smoothstack.transactionbatch.context.ContextHolder;
 import com.smoothstack.transactionbatch.model.UserBase;
 
-
 public class UserGenerator {
     private static UserGenerator INSTANCE = null;
 
     private final Faker faker = new Faker();
-    private final ContextHolder context = new ContextHolder();
-
-    private final String onlineAddress = "12345 Street St.";
-    private final String onlineZip = "66666";
-    private final String onlineCity = "Townsville";
-
+    private static final AbstractMap<Long, UserBase> context = new ConcurrentHashMap<>();
 
     private UserGenerator() {}
 
@@ -33,10 +29,11 @@ public class UserGenerator {
         return INSTANCE;
     }
 
-    public Optional<UserBase> generateUser(long id, String address) {
-        if (!context.doesUserExist(id)) return Optional.empty();
-
-        String firstName = faker.name().firstName();
+    public Optional<UserBase> generateUser(long id) {
+        if (!context.containsKey(id)) {
+            synchronized (this) {
+                if (!context.containsKey(id)) {
+                    String firstName = faker.name().firstName();
         String middleName = faker.name().firstName();
         String lastName = faker.name().lastName();
 
@@ -44,23 +41,12 @@ public class UserGenerator {
 
         String email = firstName + "." + lastName + "@smoothstack.gov";
 
-        String phoneNumber = faker.phoneNumber().phoneNumber();
+        String phoneNumber = faker.phoneNumber().cellPhone();
 
-        String addr;
-        String zip;
-        String city;
+        String[] addr = faker.address().fullAddress().split(", ");
+        String[] stuff = addr[2].split(" ");
 
-        if (address.equals("Online")) {
-            addr = onlineAddress;
-            zip = onlineZip;
-            city = onlineCity;
-        } else {
-            String[] pieces = address.split("|");
-            addr = faker.address().streetAddress();
-            city = pieces[0];
-            zip = pieces[1];
-        }
-
+        
         UserBase newUser = new UserBase(
             id,
             firstName,
@@ -69,11 +55,20 @@ public class UserGenerator {
             dateOfBirth,
             email,
             phoneNumber,
-            addr,
-            city,
-            zip
+            addr[0],
+            addr[1],
+            stuff[0],
+            stuff[1]
         );
 
+        context.put(id, newUser);
+
         return Optional.of(newUser);
+                }
+            }
+        }
+        
+        return Optional.empty();
+        
     }
 }

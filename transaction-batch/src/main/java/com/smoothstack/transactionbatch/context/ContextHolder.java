@@ -1,13 +1,12 @@
 package com.smoothstack.transactionbatch.context;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.AbstractMap;
+import java.util.concurrent.ConcurrentHashMap;
 
 import com.smoothstack.transactionbatch.model.UserBase;
 
 public class ContextHolder {
-    private Map<Long, UserBase> users = new HashMap<>();
-
+    private AbstractMap<Long, UserBase> users = new ConcurrentHashMap<>();
 
     public boolean doesUserExist(long id) {
         return users.containsKey(id);
@@ -15,5 +14,9 @@ public class ContextHolder {
 
     public void putUser(long id, UserBase user) {
         users.put(id, user);
+    }
+
+    public UserBase getUser(long id) {
+        return users.get(id);
     }
 }

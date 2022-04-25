@@ -53,7 +53,7 @@ public class BatchConfig {
         threadPoolTaskExecutor.afterPropertiesSet();
 
         return steps.get("Card Process Step")
-            .<TransactRead, UserBase>chunk(1000)
+            .<TransactRead, UserBase>chunk(10)
             .reader(transactionReader())
             .processor( new UserProcessor() )
             .writer( new ConsoleItemWriter() )

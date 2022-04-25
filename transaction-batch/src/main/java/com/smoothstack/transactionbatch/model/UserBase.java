@@ -8,11 +8,13 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
+@ToString
 @XmlRootElement
 public class UserBase {
     private long id;
@@ -23,6 +25,7 @@ public class UserBase {
     private String email;
     private String phone;
     private String address;
+    private String state;
     private String city;
     private String zip;
 
