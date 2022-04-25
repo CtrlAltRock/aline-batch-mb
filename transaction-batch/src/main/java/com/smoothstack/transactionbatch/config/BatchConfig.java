@@ -1,10 +1,11 @@
 package com.smoothstack.transactionbatch.config;
 
+import java.util.HashMap;
+
 import com.smoothstack.transactionbatch.mapper.CustomFieldSetMapper;
 import com.smoothstack.transactionbatch.model.TransactRead;
 import com.smoothstack.transactionbatch.model.UserBase;
 import com.smoothstack.transactionbatch.processor.UserProcessor;
-import com.smoothstack.transactionbatch.writer.ConsoleItemWriter;
 
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
@@ -15,10 +16,13 @@ import org.springframework.batch.core.configuration.annotation.StepScope;
 import org.springframework.batch.core.launch.support.RunIdIncrementer;
 import org.springframework.batch.item.file.FlatFileItemReader;
 import org.springframework.batch.item.file.builder.FlatFileItemReaderBuilder;
+import org.springframework.batch.item.xml.StaxEventItemWriter;
+import org.springframework.batch.item.xml.builder.StaxEventItemWriterBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.FileSystemResource;
+import org.springframework.oxm.xstream.XStreamMarshaller;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
 @EnableBatchProcessing
@@ -34,7 +38,8 @@ public class BatchConfig {
     @Bean
     @StepScope
     public FlatFileItemReader<TransactRead> transactionReader() {
-        FileSystemResource inputFile = new FileSystemResource("input/test.csv");
+        FileSystemResource inputFile = new FileSystemResource("input/test2.csv");
+        
         return new FlatFileItemReaderBuilder<TransactRead>()
                 .linesToSkip(1)
                 .name("csvflatfileitemreader")
@@ -43,6 +48,31 @@ public class BatchConfig {
                 .names(new String[]{"user", "card", "year", "month", "day", "time", "amount", "use", "merchant", "city", "state", "zip", "mcc", "errors", "isFraud"})
                 .fieldSetMapper(new CustomFieldSetMapper())
                 .build();
+    }
+
+    @Bean
+    @StepScope
+    public XStreamMarshaller userXmlMarshaller() {
+        HashMap<String, Class<UserBase>> alias = new HashMap<>();
+        alias.put("user", UserBase.class);
+
+        XStreamMarshaller marshaller = new XStreamMarshaller();
+        marshaller.setAliases(alias);
+
+        return marshaller;
+    }
+
+    @Bean
+    @StepScope
+    public StaxEventItemWriter<UserBase> userXmlWriter() {
+        FileSystemResource output = new FileSystemResource("output/GeneratedUsers.xml");
+
+        return new StaxEventItemWriterBuilder<UserBase>()
+            .name("userXmlWriter")
+            .resource(output)
+            .marshaller(userXmlMarshaller())
+            .rootTagName("GeneratedUsers")
+            .build();
     }
 
     @Bean
@@ -56,7 +86,7 @@ public class BatchConfig {
             .<TransactRead, UserBase>chunk(10)
             .reader(transactionReader())
             .processor( new UserProcessor() )
-            .writer( new ConsoleItemWriter() )
+            .writer(userXmlWriter())
             .taskExecutor(threadPoolTaskExecutor)
             .build();
     }
