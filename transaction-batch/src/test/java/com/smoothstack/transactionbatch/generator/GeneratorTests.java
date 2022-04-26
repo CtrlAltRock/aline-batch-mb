@@ -1,5 +1,6 @@
 package com.smoothstack.transactionbatch.generator;
 
+import com.smoothstack.transactionbatch.dto.MerchantDto;
 import com.smoothstack.transactionbatch.model.*;
 
 import org.junit.jupiter.api.Test;
@@ -41,5 +42,20 @@ public class GeneratorTests {
         assertEquals(1L, card.getId());
         assertEquals(1L, card.getUser());
         assertNotNull(card.getCardNumber());
+    }
+
+    @Test
+    public void correctMerchantGeneration() {
+        MerchantDto mer = new MerchantDto(1, "Chicago", "IL", "60465", "111");
+        Optional<MerchantBase> testMerch = merchantGenerator.generateMerchant(mer);
+
+        assertTrue(testMerch.isPresent());
+
+        MerchantBase merch = testMerch.get();
+
+        assertEquals(1L, merch.getId());
+        assertNotNull(merch.getName());
+        assertEquals("Chicago", merch.getCity());
+        assertEquals("IL", merch.getState());
     }
 }
