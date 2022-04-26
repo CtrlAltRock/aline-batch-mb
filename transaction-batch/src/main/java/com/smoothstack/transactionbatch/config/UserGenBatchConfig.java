@@ -6,7 +6,6 @@ import com.smoothstack.transactionbatch.mapper.CustomFieldSetMapper;
 import com.smoothstack.transactionbatch.model.TransactRead;
 import com.smoothstack.transactionbatch.model.UserBase;
 import com.smoothstack.transactionbatch.processor.UserProcessor;
-import com.smoothstack.transactionbatch.writer.ConsoleItemWriter;
 
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
@@ -77,7 +76,7 @@ public class UserGenBatchConfig {
     }
 
     @Bean
-    public Step threadedStep() {
+    public Step userStep() {
         ThreadPoolTaskExecutor threadPoolTaskExecutor = new ThreadPoolTaskExecutor();
         threadPoolTaskExecutor.setCorePoolSize(8);
         threadPoolTaskExecutor.setMaxPoolSize(500);
@@ -87,7 +86,7 @@ public class UserGenBatchConfig {
             .<TransactRead, UserBase>chunk(10000)
             .reader(transactionReader())
             .processor( new UserProcessor() )
-            .writer(new ConsoleItemWriter() )
+            .writer( userXmlWriter() )
             .allowStartIfComplete(true)
             .taskExecutor(threadPoolTaskExecutor)
             .build();
@@ -97,7 +96,7 @@ public class UserGenBatchConfig {
     public Job userJob() {
         return jobs.get("User Process")
             .incrementer(new RunIdIncrementer())
-            .start(threadedStep())
+            .start(userStep())
             .build();
     }
 }

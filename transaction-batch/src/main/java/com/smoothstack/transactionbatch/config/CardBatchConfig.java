@@ -6,7 +6,6 @@ import com.smoothstack.transactionbatch.mapper.CustomFieldSetMapper;
 import com.smoothstack.transactionbatch.model.CardBase;
 import com.smoothstack.transactionbatch.model.TransactRead;
 import com.smoothstack.transactionbatch.processor.CardProcessor;
-import com.smoothstack.transactionbatch.writer.ConsoleItemWriter;
 
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
@@ -26,8 +25,8 @@ import org.springframework.core.io.FileSystemResource;
 import org.springframework.oxm.xstream.XStreamMarshaller;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
-@EnableBatchProcessing
-@Configuration
+//@EnableBatchProcessing
+//@Configuration
 public class CardBatchConfig {
     @Autowired
     private JobBuilderFactory jobs;
@@ -76,7 +75,7 @@ public class CardBatchConfig {
     }
 
     @Bean
-    public Step threadedStep() {
+    public Step cardStep() {
         ThreadPoolTaskExecutor threadPoolTaskExecutor = new ThreadPoolTaskExecutor();
         threadPoolTaskExecutor.setCorePoolSize(8);
         threadPoolTaskExecutor.setMaxPoolSize(500);
@@ -96,7 +95,7 @@ public class CardBatchConfig {
     public Job cardJob() {
         return jobs.get("Card Process")
             .incrementer(new RunIdIncrementer())
-            .start(threadedStep())
+            .start(cardStep())
             .build();
     }
 }
