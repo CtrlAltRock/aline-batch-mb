@@ -30,5 +30,16 @@ public class GeneratorTests {
         assertNotNull(user.getPhone());
     }
 
-    
+    @Test
+    public void correctCardGeneration() {
+        Optional<CardBase> testCard = cardGenerator.generateCard(1, 2);
+
+        assertTrue(testCard.isPresent());
+
+        CardBase card = testCard.get();
+
+        assertEquals(1L, card.getId());
+        assertEquals(1L, card.getUser());
+        assertNotNull(card.getCardNumber());
+    }
 }
