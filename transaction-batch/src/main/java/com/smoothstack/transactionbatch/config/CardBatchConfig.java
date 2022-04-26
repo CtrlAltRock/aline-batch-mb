@@ -3,9 +3,9 @@ package com.smoothstack.transactionbatch.config;
 import java.util.HashMap;
 
 import com.smoothstack.transactionbatch.mapper.CustomFieldSetMapper;
+import com.smoothstack.transactionbatch.model.CardBase;
 import com.smoothstack.transactionbatch.model.TransactRead;
-import com.smoothstack.transactionbatch.model.UserBase;
-import com.smoothstack.transactionbatch.processor.UserProcessor;
+import com.smoothstack.transactionbatch.processor.CardProcessor;
 
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
@@ -27,8 +27,7 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
 //@EnableBatchProcessing
 //@Configuration
-public class UserGenBatchConfig {
-    
+public class CardBatchConfig {
     @Autowired
     private JobBuilderFactory jobs;
 
@@ -52,9 +51,9 @@ public class UserGenBatchConfig {
 
     @Bean
     @StepScope
-    public XStreamMarshaller userXmlMarshaller() {
-        HashMap<String, Class<UserBase>> alias = new HashMap<>();
-        alias.put("user", UserBase.class);
+    public XStreamMarshaller cardXmlMarshaller() {
+        HashMap<String, Class<CardBase>> alias = new HashMap<>();
+        alias.put("card", CardBase.class);
 
         XStreamMarshaller marshaller = new XStreamMarshaller();
         marshaller.setAliases(alias);
@@ -64,39 +63,39 @@ public class UserGenBatchConfig {
 
     @Bean
     @StepScope
-    public StaxEventItemWriter<UserBase> userXmlWriter() {
-        FileSystemResource output = new FileSystemResource("output/GeneratedUsers.xml");
+    public StaxEventItemWriter<CardBase> cardXmlWriter() {
+        FileSystemResource output = new FileSystemResource("output/GeneratedCards.xml");
 
-        return new StaxEventItemWriterBuilder<UserBase>()
-            .name("userXmlWriter")
+        return new StaxEventItemWriterBuilder<CardBase>()
+            .name("cardXmlWriter")
             .resource(output)
-            .marshaller(userXmlMarshaller())
-            .rootTagName("GeneratedUsers")
+            .marshaller(cardXmlMarshaller())
+            .rootTagName("GeneratedCards")
             .build();
     }
 
     @Bean
-    public Step userStep() {
+    public Step cardStep() {
         ThreadPoolTaskExecutor threadPoolTaskExecutor = new ThreadPoolTaskExecutor();
         threadPoolTaskExecutor.setCorePoolSize(8);
         threadPoolTaskExecutor.setMaxPoolSize(500);
         threadPoolTaskExecutor.afterPropertiesSet();
 
-        return steps.get("User Process Step")
-            .<TransactRead, UserBase>chunk(10000)
+        return steps.get("Card Process Step")
+            .<TransactRead, CardBase>chunk(100000)
             .reader(transactionReader())
-            .processor( new UserProcessor() )
-            .writer( userXmlWriter() )
+            .processor( new CardProcessor() )
+            .writer(cardXmlWriter())
             .allowStartIfComplete(true)
             .taskExecutor(threadPoolTaskExecutor)
             .build();
     }
     
     @Bean
-    public Job userJob() {
-        return jobs.get("User Process")
+    public Job cardJob() {
+        return jobs.get("Card Process")
             .incrementer(new RunIdIncrementer())
-            .start(userStep())
+            .start(cardStep())
             .build();
     }
 }
