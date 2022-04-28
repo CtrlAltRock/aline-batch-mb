@@ -15,6 +15,7 @@ public class GeneratorTests {
     private final UserGenerator userGenerator = UserGenerator.getInstance();
     private final CardGenerator cardGenerator = CardGenerator.getInstance();
     private final MerchantGenerator merchantGenerator = MerchantGenerator.getInstance();
+    private final StateGenerator stateGenerator = StateGenerator.getInstance();
     
     @Test
     public void correctUserGeneration() {
@@ -57,5 +58,17 @@ public class GeneratorTests {
         assertNotNull(merch.getName());
         assertEquals("Chicago", merch.getCity());
         assertEquals("IL", merch.getState());
+    }
+
+    @Test
+    public void correctStateCollect() {
+        Optional<StateBase> testState = stateGenerator.getState("IL");
+
+        assertTrue(testState.isPresent());
+
+        StateBase state = testState.get();
+
+        assertEquals("Illinois", state.getName());
+        assertEquals("Springfield", state.getCapital());
     }
 }
