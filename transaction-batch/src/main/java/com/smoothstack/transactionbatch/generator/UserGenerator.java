@@ -28,6 +28,7 @@ public class UserGenerator {
         return INSTANCE;
     }
 
+    // For each unique user id, generate a fake name and account information
     public Optional<UserBase> generateUser(long id) {
         if (!context.containsKey(id)) {
             synchronized (this) {
@@ -44,7 +45,6 @@ public class UserGenerator {
 
                     String[] addr = faker.address().fullAddress().split(", ");
                     String[] stuff = addr[2].split(" ");
-
 
                     UserBase newUser = new UserBase(
                         id,

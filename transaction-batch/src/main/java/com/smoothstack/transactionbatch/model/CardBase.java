@@ -13,7 +13,7 @@ import lombok.ToString;
 @ToString
 @AllArgsConstructor
 @NoArgsConstructor
-@XmlRootElement
+@XmlRootElement(name = "card")
 public class CardBase {
     private long id;
     private long user;
