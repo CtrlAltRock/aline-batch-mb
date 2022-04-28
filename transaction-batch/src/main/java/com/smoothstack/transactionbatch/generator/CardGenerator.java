@@ -26,30 +26,28 @@ public class CardGenerator {
         return INSTANCE;
     }
 
-    public Optional<CardBase> generateCard(long user, long card) {
-        if (!cardList.containsKey(user) || !cardList.get(user).containsKey(card)) {
+    public Optional<CardBase> generateCard(long user, long card) {        
+        if (!cardList.containsKey(user)) {
             synchronized (CardGenerator.class) {
-                if (!cardList.containsKey(user)) {
-                    String cardNumber = luhnCard();
+                if (!cardList.containsKey(user)) cardList.put(user, new ConcurrentHashMap<>());
+            }
+        }
+        if (!cardList.get(user).containsKey(card)) {
+            synchronized (CardGenerator.class) {
+                if (!cardList.get(user).containsKey(card)) {
+                    CardBase car = new CardBase(cardCount.getAndIncrement(), user, luhnCard());
 
-                    cardList.put(user, new ConcurrentHashMap<>());;
+                    cardList.get(user).put(card, car.getCardNumber());
 
-                    cardList.get(user).put(card, cardNumber);
-
-                    return Optional.of( new CardBase(cardCount.incrementAndGet(), user, cardNumber) );
-                } else if (!cardList.get(user).containsKey(card)) {
-                    String cardNumber = luhnCard();
-
-                    cardList.get(user).put(card, cardNumber);
-
-                    return Optional.of( new CardBase(cardCount.incrementAndGet(), user, cardNumber) );
+                    return Optional.of(car);
                 }
             }
         }
-
-        return Optional.empty(); 
+        
+        return Optional.empty();
     }
 
+    // Uses Luhn Algorithm to generate card numbers
     public String luhnCard() {
         String cardNumber = Long.toString(LuhnAlgorithms.generateRandomLuhn(16));
 

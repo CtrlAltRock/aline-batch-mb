@@ -9,9 +9,6 @@ import com.smoothstack.transactionbatch.model.TransactRead;
 
 import org.springframework.batch.item.ItemProcessor;
 
-import lombok.extern.slf4j.Slf4j;
-
-@Slf4j
 public class MerchantProcessor implements ItemProcessor<TransactRead, MerchantBase> {
     private static MerchantGenerator merchantGenerator = MerchantGenerator.getInstance();
     

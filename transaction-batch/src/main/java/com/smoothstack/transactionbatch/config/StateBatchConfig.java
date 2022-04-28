@@ -2,9 +2,9 @@ package com.smoothstack.transactionbatch.config;
 
 import java.util.HashMap;
 
-import com.smoothstack.transactionbatch.model.CardBase;
+import com.smoothstack.transactionbatch.model.StateBase;
 import com.smoothstack.transactionbatch.model.TransactRead;
-import com.smoothstack.transactionbatch.processor.CardProcessor;
+import com.smoothstack.transactionbatch.processor.StateProcessor;
 import com.smoothstack.transactionbatch.reader.TransactionReader;
 import com.smoothstack.transactionbatch.writer.SynchronizedXML;
 import com.smoothstack.transactionbatch.writer.SynchronizedXMLBuilder;
@@ -20,7 +20,7 @@ import org.springframework.core.task.TaskExecutor;
 import org.springframework.oxm.xstream.XStreamMarshaller;
 
 @Configuration
-public class CardBatchConfig {
+public class StateBatchConfig {
     @Autowired
     private StepBuilderFactory steps;
 
@@ -32,9 +32,9 @@ public class CardBatchConfig {
 
     @Bean
     @StepScope
-    public XStreamMarshaller cardXmlMarshaller() {
-        HashMap<String, Class<CardBase>> alias = new HashMap<>();
-        alias.put("card", CardBase.class);
+    public XStreamMarshaller stateXmlMarshaller() {
+        HashMap<String, Class<StateBase>> alias = new HashMap<>();
+        alias.put("state", StateBase.class);
 
         XStreamMarshaller marshaller = new XStreamMarshaller();
         marshaller.setAliases(alias);
@@ -44,24 +44,24 @@ public class CardBatchConfig {
 
     @Bean
     @StepScope
-    public SynchronizedXML<CardBase> cardXmlWriter() {
-        FileSystemResource output = new FileSystemResource("output/GeneratedCards.xml");
+    public SynchronizedXML<StateBase> stateXmlWriter() {
+        FileSystemResource output = new FileSystemResource("output/GeneratedStates.xml");
 
-        return new SynchronizedXMLBuilder<CardBase>()
-            .name("cardXmlWriter")
+        return new SynchronizedXMLBuilder<StateBase>()
+            .name("stateXmlWriter")
             .resource(output)
-            .marshaller(cardXmlMarshaller())
-            .rootTagName("GeneratedCards")
+            .marshaller(stateXmlMarshaller())
+            .rootTagName("GeneratedStates")
             .build();
     }
 
     @Bean
-    public Step cardStep() {
-        return steps.get("Card Process Step")
-            .<TransactRead, CardBase>chunk(100000)
+    public Step stateStep() {
+        return steps.get("State Process Step")
+            .<TransactRead, StateBase>chunk(10000)
             .reader(transactionReader.read())
-            .processor( new CardProcessor() )
-            .writer(cardXmlWriter())
+            .processor( new StateProcessor() )
+            .writer( stateXmlWriter() )
             .allowStartIfComplete(true)
             .taskExecutor(taskExecutor)
             .build();
