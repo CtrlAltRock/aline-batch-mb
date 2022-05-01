@@ -7,6 +7,7 @@ import com.smoothstack.transactionbatch.model.TransactRead;
 import com.smoothstack.transactionbatch.processor.CardProcessor;
 import com.smoothstack.transactionbatch.processor.MerchantProcessor;
 import com.smoothstack.transactionbatch.processor.UserProcessor;
+import com.smoothstack.transactionbatch.processor.analysis.DepositProcessor;
 import com.smoothstack.transactionbatch.tasklet.MainWriter;
 import com.smoothstack.transactionbatch.writer.ConsoleItemWriter;
 
@@ -58,12 +59,17 @@ public class CompositeBatch {
     @Bean
     @StepScope
     public CompositeItemProcessor<TransactRead, TransactRead> compositeProcessor(
-        @Value("#{jobParameters['enrich']}") String enrich
+        @Value("#{jobParameters['enrich']}") String enrich,
+        @Value("#{jobParameters['analyze']}") String analyze
     ) {
         CompositeItemProcessor<TransactRead, TransactRead> processor = new CompositeItemProcessor<>();
 
         if (enrich != null && !enrich.equals("false")) {
             processor.setDelegates(Arrays.asList(new UserProcessor(), new CardProcessor(), new MerchantProcessor()));
+        }
+
+        if (analyze != null && !analyze.equals("false")) {
+            processor.setDelegates(Arrays.asList(new DepositProcessor()));
         }
 
         return processor;
@@ -74,7 +80,7 @@ public class CompositeBatch {
         return steps.get("Composite Step")
             .<TransactRead, TransactRead>chunk(1000)
             .reader(transactionReader( null ))
-            .processor(compositeProcessor(null))
+            .processor(compositeProcessor(null, null))
             .writer(new ConsoleItemWriter())
             .allowStartIfComplete(true)
             .taskExecutor(taskExecutor)

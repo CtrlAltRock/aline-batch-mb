@@ -9,4 +9,5 @@ import lombok.Setter;
 @NoArgsConstructor
 public class GeneratorRequest {
     private String dataEnrich;
+    private String dataAnalyze;
 }

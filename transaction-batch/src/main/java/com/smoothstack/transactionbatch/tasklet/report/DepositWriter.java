@@ -1,4 +1,4 @@
-package com.smoothstack.transactionbatch.tasklet.module;
+package com.smoothstack.transactionbatch.tasklet.report;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -10,23 +10,29 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import com.smoothstack.transactionbatch.generator.UserGenerator;
+import com.smoothstack.transactionbatch.report.Deposit;
 import com.thoughtworks.xstream.XStream;
 
-
-public class UserWriter {
+public class DepositWriter {
     public static void write(String filePath) throws IOException {
         XStream xStream = new XStream();
 
-        final UserGenerator users = UserGenerator.getInstance();
-
+        final Deposit depo = Deposit.getInstance();
+        
         List<String> toWrite = new ArrayList<>();
-        toWrite.addAll(Arrays.asList("<?xml version=\"1.0\" encoding=\"UTF-8\"?>", "<GeneratedUsers>"));
-        toWrite.addAll(users.getContext().values().stream().filter(n -> n != null).map(n -> xStream.toXML(n)).collect(Collectors.toList()));
-        toWrite.add("</GeneratedUsers>");
+ 
+        toWrite.addAll(Arrays.asList("<?xml version=\"1.0\" encoding=\"UTF-8\"?>", "<Deposits>"));
+ 
+        List<String> accounts = depo.getBalances().values().stream()
+            .map((n) -> xStream.toXML(n))
+            .collect(Collectors.toList());
+
+        toWrite.addAll(accounts);
+        toWrite.add("</Deposits>");
+
         Files.write(
-            Paths.get(filePath, "output/generation/GeneratedUsers.xml"), 
-            toWrite, 
+            Paths.get(filePath, "output/reports/DepositReport.xml"),
+            toWrite,
             new OpenOption[]{StandardOpenOption.CREATE, StandardOpenOption.WRITE, StandardOpenOption.TRUNCATE_EXISTING}
         );
     }

@@ -1,6 +1,5 @@
 package com.smoothstack.transactionbatch.tasklet.module;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.OpenOption;
@@ -15,10 +14,8 @@ import com.smoothstack.transactionbatch.generator.MerchantGenerator;
 import com.thoughtworks.xstream.XStream;
 
 public class MerchantWriter {
-    public static void write() throws IOException {
+    public static void write(String filePath) throws IOException {
         XStream xStream = new XStream();
-
-        final String filePath = new File("").getAbsolutePath();
 
         final MerchantGenerator merchants = MerchantGenerator.getInstance();
 
@@ -28,7 +25,7 @@ public class MerchantWriter {
         toWrite.add("</GeneratedMerchants>");
         
         Files.write(
-            Paths.get(filePath, "output/GeneratedMerchants.xml"), 
+            Paths.get(filePath, "output/generation/GeneratedMerchants.xml"), 
             toWrite, 
             new OpenOption[]{StandardOpenOption.CREATE, StandardOpenOption.WRITE, StandardOpenOption.TRUNCATE_EXISTING}
         );

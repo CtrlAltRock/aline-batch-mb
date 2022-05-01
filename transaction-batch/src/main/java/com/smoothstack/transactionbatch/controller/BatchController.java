@@ -35,7 +35,9 @@ public class BatchController {
 
 
         // Allow to not kick off data generation based on form passed in post data
-        if (req != null) jobParameters.addString("enrich", req.getDataEnrich().toLowerCase());
+        if (req.getDataEnrich() != null) jobParameters.addString("enrich", req.getDataEnrich().toLowerCase());
+
+        if (req.getDataAnalyze() != null) jobParameters.addString("analyze", req.getDataAnalyze().toLowerCase());
 
         JobExecution exec = jobLauncher.run(job, jobParameters.toJobParameters());
 

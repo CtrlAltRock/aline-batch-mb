@@ -1,6 +1,5 @@
 package com.smoothstack.transactionbatch.tasklet.module;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.OpenOption;
@@ -17,10 +16,8 @@ import com.smoothstack.transactionbatch.model.CardBase;
 import com.thoughtworks.xstream.XStream;
 
 public class CardWriter {
-    public static void write() throws IOException {
+    public static void write(String filePath) throws IOException {
         XStream xStream = new XStream();
-
-        final String filePath = new File("").getAbsolutePath();
 
         final CardGenerator cards = CardGenerator.getInstance();
 
@@ -35,9 +32,9 @@ public class CardWriter {
         toWrite.add("</GeneratedCards>");
         
         Files.write(
-            Paths.get(filePath, "output/GeneratedCards.xml"), 
+            Paths.get(filePath, "output/generation/GeneratedCards.xml"), 
             toWrite, 
             new OpenOption[]{StandardOpenOption.CREATE, StandardOpenOption.WRITE, StandardOpenOption.TRUNCATE_EXISTING}
-            );
+        );
     }
 }
