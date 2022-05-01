@@ -1,19 +1,16 @@
 package com.smoothstack.transactionbatch.processor;
 
-import java.util.Optional;
-
 import com.smoothstack.transactionbatch.dto.MerchantDto;
 import com.smoothstack.transactionbatch.generator.MerchantGenerator;
-import com.smoothstack.transactionbatch.model.MerchantBase;
 import com.smoothstack.transactionbatch.model.TransactRead;
 
 import org.springframework.batch.item.ItemProcessor;
 
-public class MerchantProcessor implements ItemProcessor<TransactRead, MerchantBase> {
+public class MerchantProcessor implements ItemProcessor<TransactRead, TransactRead> {
     private static MerchantGenerator merchantGenerator = MerchantGenerator.getInstance();
     
     @Override
-    public MerchantBase process(TransactRead item) throws Exception {
+    public TransactRead process(TransactRead item) throws Exception {
         String zip;
         String state;
 
@@ -22,8 +19,8 @@ public class MerchantProcessor implements ItemProcessor<TransactRead, MerchantBa
         
         MerchantDto merchant = new MerchantDto(item.getMerchant(), item.getCity(), state, zip, Integer.toString(item.getMcc()));
         
-        Optional<MerchantBase> createdMerchant = merchantGenerator.generateMerchant(merchant);
+        merchantGenerator.generateMerchant(merchant);
 
-        if (createdMerchant.isEmpty()) return null; else return createdMerchant.get();
+        return item;
     }
 }

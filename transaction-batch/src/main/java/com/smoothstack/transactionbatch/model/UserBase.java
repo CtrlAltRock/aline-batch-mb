@@ -15,7 +15,7 @@ import lombok.ToString;
 @AllArgsConstructor
 @NoArgsConstructor
 @ToString
-@XmlRootElement
+@XmlRootElement(name = "User")
 public class UserBase {
     private long id;
     private String firstName;

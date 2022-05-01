@@ -57,26 +57,28 @@ public class CompositeBatch {
 
     @Bean
     @StepScope
-    public CompositeItemProcessor<TransactRead, TransactRead> compositeProcessor() {
+    public CompositeItemProcessor<TransactRead, TransactRead> compositeProcessor(
+        @Value("#{jobParameters['enrich']}") String enrich
+    ) {
         CompositeItemProcessor<TransactRead, TransactRead> processor = new CompositeItemProcessor<>();
 
-        processor.setDelegates(Arrays.asList(new UserProcessor(), new CardProcessor(), new MerchantProcessor()));
+        if (enrich != null && !enrich.equals("false")) {
+            processor.setDelegates(Arrays.asList(new UserProcessor(), new CardProcessor(), new MerchantProcessor()));
+        }
 
         return processor;
     }
-
 
     @Bean
     public Step compositeStep() {
         return steps.get("Composite Step")
             .<TransactRead, TransactRead>chunk(1000)
             .reader(transactionReader( null ))
-            .processor(compositeProcessor())
+            .processor(compositeProcessor(null))
             .writer(new ConsoleItemWriter())
             .allowStartIfComplete(true)
             .taskExecutor(taskExecutor)
             .build();
-
     }
 
     @Bean
@@ -84,7 +86,6 @@ public class CompositeBatch {
         return steps.get("Writer Step")
             .tasklet(new MainWriter())
             .build();
-
     }
     
     @Bean

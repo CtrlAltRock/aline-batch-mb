@@ -10,13 +10,19 @@ import org.springframework.batch.core.StepContribution;
 import org.springframework.batch.core.scope.context.ChunkContext;
 import org.springframework.batch.core.step.tasklet.Tasklet;
 import org.springframework.batch.repeat.RepeatStatus;
+import org.springframework.beans.factory.annotation.Value;
 
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class MainWriter implements Tasklet {
+    @Value("#{jobParameters['enrich']}")
+    private String doRun;
+
     @Override
     public RepeatStatus execute(StepContribution contrib, ChunkContext cont) throws Exception {
+        if (doRun != null && doRun.equals("false")) return RepeatStatus.FINISHED;
+        
         try {
             UserWriter.write();
         } catch (IOException e) {

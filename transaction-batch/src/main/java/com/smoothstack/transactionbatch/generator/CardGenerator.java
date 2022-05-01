@@ -9,7 +9,7 @@ import com.smoothstack.transactionbatch.model.CardBase;
 import com.vangogiel.luhnalgorithms.LuhnAlgorithms;
 
 public class CardGenerator {
-    private AbstractMap<Long, AbstractMap<Long, String>> cardList = new ConcurrentHashMap<>();
+    private AbstractMap<Long, AbstractMap<Long, CardBase>> cardList = new ConcurrentHashMap<>();
     private static AtomicLong cardCount = new AtomicLong(0);
     private static CardGenerator INSTANCE = null;
 
@@ -26,6 +26,8 @@ public class CardGenerator {
         return INSTANCE;
     }
 
+    public AbstractMap<Long, AbstractMap<Long, CardBase>> getContext() {return cardList;}
+
     public Optional<CardBase> generateCard(long user, long card) {        
         if (!cardList.containsKey(user)) {
             synchronized (CardGenerator.class) {
@@ -35,9 +37,9 @@ public class CardGenerator {
         if (!cardList.get(user).containsKey(card)) {
             synchronized (CardGenerator.class) {
                 if (!cardList.get(user).containsKey(card)) {
-                    CardBase car = new CardBase(cardCount.getAndIncrement(), user, luhnCard());
+                    CardBase car = new CardBase(cardCount.incrementAndGet(), user, luhnCard());
 
-                    cardList.get(user).put(card, car.getCardNumber());
+                    cardList.get(user).put(card, car);
 
                     return Optional.of(car);
                 }
