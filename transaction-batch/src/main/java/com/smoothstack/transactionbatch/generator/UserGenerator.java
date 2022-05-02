@@ -28,6 +28,8 @@ public class UserGenerator {
         return INSTANCE;
     }
 
+    public AbstractMap<Long, UserBase> getContext() { return context; }
+
     // For each unique user id, generate a fake name and account information
     public Optional<UserBase> generateUser(long id) {
         if (!context.containsKey(id)) {

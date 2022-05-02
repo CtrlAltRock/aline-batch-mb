@@ -26,5 +26,7 @@ public class TransactRead {
     private String zip;
     private int mcc;
     private String errors;
-    private boolean isFraud;
+    private boolean fraud;
+
+    public boolean getFraud() { return fraud; }
 }

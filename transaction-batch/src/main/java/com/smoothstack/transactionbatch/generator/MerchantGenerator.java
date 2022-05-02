@@ -1,6 +1,7 @@
 package com.smoothstack.transactionbatch.generator;
 
 import java.util.AbstractMap;
+import java.util.Collection;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -26,6 +27,8 @@ public class MerchantGenerator {
         }
         return INSTANCE;
     }
+
+    public Collection<MerchantBase> getContext() { return context.values(); }
 
     public Optional<MerchantBase> generateMerchant(MerchantDto merch) {
         long id = merch.getId();

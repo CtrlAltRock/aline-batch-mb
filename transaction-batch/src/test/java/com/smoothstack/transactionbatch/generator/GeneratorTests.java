@@ -43,6 +43,7 @@ public class GeneratorTests {
         assertEquals(1L, card.getId());
         assertEquals(1L, card.getUser());
         assertNotNull(card.getCardNumber());
+        assertEquals(16, card.getCardNumber().length());
     }
 
     @Test
