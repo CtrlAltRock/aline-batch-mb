@@ -13,9 +13,6 @@ import java.util.stream.Collectors;
 import com.smoothstack.transactionbatch.report.Deposit;
 import com.thoughtworks.xstream.XStream;
 
-import lombok.extern.slf4j.Slf4j;
-
-@Slf4j
 public class DepositWriter {
     public static void write(String filePath) throws IOException {
         XStream xStream = new XStream();
