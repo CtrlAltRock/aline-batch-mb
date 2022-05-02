@@ -33,6 +33,7 @@ public class ErrorsFound {
     public Collection<ErrorBase> getErrors() { 
         return errorsFound.values().stream()
             .flatMap(n -> n.stream())
+            .filter(n -> !n.getErrorMessage().isBlank())
             .collect(Collectors.toList());
     }
 
