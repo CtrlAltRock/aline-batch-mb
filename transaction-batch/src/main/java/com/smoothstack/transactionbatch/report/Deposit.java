@@ -7,7 +7,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import com.smoothstack.transactionbatch.model.DepositBase;
 
 public class Deposit {
-    // Atomic reference assures atomicity when balance is updated
     private AbstractMap<Long, DepositBase> accountBalance = new ConcurrentHashMap<>();
     private static Deposit INSTANCE = null;
 
@@ -26,12 +25,12 @@ public class Deposit {
 
     public AbstractMap<Long, DepositBase> getBalances() { return accountBalance; }
 
-    public void makeTransaction(long user, BigDecimal amount) {
+    public void makeDeposit(long user, BigDecimal amount) {
         if (!accountBalance.containsKey(user)) {
             synchronized (this) {
                 if (!accountBalance.containsKey(user)) {
                     // Scale set to two for financial transactions
-                    accountBalance.put(user, new DepositBase());
+                    accountBalance.put(user, new DepositBase(user));
                 }
             }
         }

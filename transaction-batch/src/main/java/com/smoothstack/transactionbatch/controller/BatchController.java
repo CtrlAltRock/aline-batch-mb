@@ -31,7 +31,7 @@ public class BatchController {
     @PostMapping(path = "/load", consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
     public ResponseEntity<String> generateUsers(@RequestBody GeneratorRequest req) throws Exception {
         JobParametersBuilder jobParameters = new JobParametersBuilder()
-            .addString("inputFile", "input/card_transaction.v1.csv").addDate("time", Date.from(Instant.now()));
+            .addString("inputFile", "input/test2.csv").addDate("time", Date.from(Instant.now()));
 
 
         // Allow to not kick off data generation based on form passed in post data

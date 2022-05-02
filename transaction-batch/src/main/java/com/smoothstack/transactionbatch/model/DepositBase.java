@@ -14,7 +14,8 @@ public class DepositBase {
     private long id;
     private BigDecimal currentBalance;
 
-    public DepositBase() {
+    public DepositBase(long user) {
+        this.id = user;
         this.currentBalance = new BigDecimal(0).setScale(2);
     }
 }
