@@ -36,7 +36,7 @@ public class CustomFieldSetMapper implements FieldSetMapper<TransactRead> {
 
         boolean isFraud = false;
 
-        if (fieldSet.readString("isFraud").equals("yes")) isFraud = true;
+        if (fieldSet.readString("isFraud").equals("Yes")) isFraud = true;
 
         return new TransactRead(user, card, date, amount, use, merchant, city, state, zip, mcc, errors, isFraud);
     }

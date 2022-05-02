@@ -3,8 +3,10 @@ package com.smoothstack.transactionbatch.report;
 import java.time.LocalDateTime;
 import java.util.AbstractMap;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
 import com.smoothstack.transactionbatch.model.ErrorBase;
 
@@ -26,7 +28,20 @@ public class ErrorsFound {
         return INSTANCE;
     }
 
-    public AbstractMap<Long, List<ErrorBase>> getBalances() { return errorsFound; }
+    public AbstractMap<Long, List<ErrorBase>> getErrorsFound() { return errorsFound; }
+
+    public Collection<ErrorBase> getErrors() { 
+        return errorsFound.values().stream()
+            .flatMap(n -> n.stream())
+            .collect(Collectors.toList());
+    }
+
+    public Collection<ErrorBase> getFrauds() {
+        return errorsFound.values().stream()
+            .flatMap(n -> n.stream())
+            .filter(n -> n.isFraud())
+            .collect(Collectors.toList());
+    }
 
     public void makeError(long user, LocalDateTime transactionTime, String message, boolean isFraud) {
         if (!errorsFound.containsKey(user)) {
