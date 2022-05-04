@@ -9,6 +9,6 @@ import lombok.Getter;
 @Getter
 @XmlRootElement
 public class UserErrorReport {
-    private long userId;
     private String errorMessage;
+    private String percent;
 }

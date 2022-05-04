@@ -71,4 +71,9 @@ public class UserGenerator {
         
         return Optional.empty();        
     }
+
+    // Clean up after writing
+    public void clearMap() {
+        context.clear();
+    }
 }

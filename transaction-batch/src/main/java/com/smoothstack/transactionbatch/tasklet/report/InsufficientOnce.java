@@ -6,11 +6,8 @@ import java.nio.file.OpenOption;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import com.smoothstack.transactionbatch.model.ErrorBase;
@@ -18,21 +15,20 @@ import com.smoothstack.transactionbatch.outputdto.UserErrorReport;
 import com.smoothstack.transactionbatch.report.ErrorsFound;
 import com.thoughtworks.xstream.XStream;
 
-public class InsufficientOnce {
-    public static void write(String filePath) throws IOException {
-        XStream xStream = new XStream();
+import lombok.extern.slf4j.Slf4j;
 
-        ErrorsFound errorsFound = ErrorsFound.getInstance();
+@Slf4j
+public class InsufficientOnce {
+    public static void write(ErrorsFound errorsFound, String filePath) throws IOException {
+        XStream xStream = new XStream();
 
         List<String> toWrite = new ArrayList<>();
 
-        toWrite.addAll(Arrays.asList("<?xml version=\"1.0\" encoding=\"UTF-8\"?>", "<Report>"));
+        toWrite.add("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<Report>");
  
-        Collection<String> errorReports = generateReports(errorsFound.getErrors())
-            .map(n -> xStream.toXML(n))
-            .collect(Collectors.toList());
+        UserErrorReport errorReports = generateReports(errorsFound.getErrors(), errorsFound.getUserCount());
 
-        toWrite.addAll(errorReports);
+        toWrite.add(xStream.toXML(errorReports));
 
         toWrite.add("</Report>");
 
@@ -43,10 +39,14 @@ public class InsufficientOnce {
         );        
     }
 
-    private static Stream<UserErrorReport> generateReports(Stream<ErrorBase> errors) {
+    private static UserErrorReport generateReports(Stream<ErrorBase> errors, long userCount) {
         HashSet<Long> users = new HashSet<>();
         errors.filter(n -> (n.getErrorMessage().equals("Insufficient Balance"))).forEach(n -> users.add(n.getUserId()));
 
-        return users.stream().map(n -> new UserErrorReport(n, "Insufficient Balance"));
+        log.info("{} is divided by {}", users.size(), userCount);
+
+        String percent = String.format("%1.3f%%", ((double) users.size() / userCount) * 100);
+
+        return new UserErrorReport("Insufficient Balance at least once", percent);
     }
 }

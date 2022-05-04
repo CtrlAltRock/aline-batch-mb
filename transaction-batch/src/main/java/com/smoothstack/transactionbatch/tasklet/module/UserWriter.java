@@ -15,10 +15,8 @@ import com.thoughtworks.xstream.XStream;
 
 
 public class UserWriter {
-    public static void write(String filePath) throws IOException {
+    public static void write(UserGenerator users, String filePath) throws IOException {
         XStream xStream = new XStream();
-
-        final UserGenerator users = UserGenerator.getInstance();
 
         List<String> toWrite = new ArrayList<>();
         toWrite.addAll(Arrays.asList("<?xml version=\"1.0\" encoding=\"UTF-8\"?>", "<GeneratedUsers>"));

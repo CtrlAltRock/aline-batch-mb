@@ -41,4 +41,9 @@ public class Deposit {
         }
     }
 
+    // Clean up after writing
+    public void clearMap() {
+        accountBalance.clear();
+    }
+
 }

@@ -12,6 +12,7 @@ import com.smoothstack.transactionbatch.model.ErrorBase;
 public class ErrorsFound {
     // Map user id's to errors that user has
     private AbstractMap<Long, List<ErrorBase>> errorsFound = new ConcurrentHashMap<>();
+
     private static ErrorsFound INSTANCE = null;
 
     private ErrorsFound() {}
@@ -41,6 +42,8 @@ public class ErrorsFound {
             .filter(n -> n.isFraud());
     }
 
+    public long getUserCount() { return errorsFound.size(); }
+
     public void makeError(long user, LocalDateTime transactionTime, String message, boolean isFraud) {
         if (!errorsFound.containsKey(user)) {
             synchronized (this) {
@@ -49,11 +52,17 @@ public class ErrorsFound {
                 }
             }
         }
-        
-        // ArrayList is unsynchronized
-        synchronized (this) {
-            List<ErrorBase> userErrors = errorsFound.get(user);
-            userErrors.add(new ErrorBase(user, transactionTime, message, isFraud));
+        if (!message.isBlank() || isFraud) {
+            // ArrayList is unsynchronized
+            synchronized (this) {
+                List<ErrorBase> userErrors = errorsFound.get(user);
+                userErrors.add(new ErrorBase(user, transactionTime, message, isFraud));
+            }
         }
+    }
+
+    // Clean up after writing
+    public void clearMap() {
+        errorsFound.clear();
     }
 }
