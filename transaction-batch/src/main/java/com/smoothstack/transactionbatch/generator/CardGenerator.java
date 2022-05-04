@@ -57,4 +57,9 @@ public class CardGenerator {
 
         return cardNumber;
     }
+
+    // Clean up after writing
+    public void clearMap() {
+        cardList.clear();
+    }
 }

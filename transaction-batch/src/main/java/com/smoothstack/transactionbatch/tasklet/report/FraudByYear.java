@@ -7,8 +7,6 @@ import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.util.AbstractMap;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -21,14 +19,12 @@ import com.smoothstack.transactionbatch.report.ErrorsFound;
 import com.thoughtworks.xstream.XStream;
 
 public class FraudByYear {
-    public static void write(String filePath) throws IOException {
+    public static void write(ErrorsFound errorsFound, String filePath) throws IOException {
         XStream xStream = new XStream();
-
-        ErrorsFound errorsFound = ErrorsFound.getInstance();
         
         List<String> toWrite = new ArrayList<>();
  
-        toWrite.addAll(Arrays.asList("<?xml version=\"1.0\" encoding=\"UTF-8\"?>", "<Report>"));
+        toWrite.add("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<Report>");
  
         List<String> errorReports = generateReports(errorsFound.getFrauds())
             .sorted((n1, n2) -> n1.getYear() < n2.getYear() ? -1 : 1)
@@ -47,11 +43,11 @@ public class FraudByYear {
     }
 
     // Return stream to save collecting until we convert to xml
-    private static Stream<YearBy> generateReports(Collection<ErrorBase> errors) {
+    private static Stream<YearBy> generateReports(Stream<ErrorBase> errors) {
         final AbstractMap<Integer, Integer> fraudByYear = new HashMap<>();
 
         // Increment for each fraud report per year
-        errors.stream().forEach((n) -> {
+        errors.forEach((n) -> {
             int year = n.getTransactionTime().getYear();
             if (fraudByYear.containsKey(year)) {
                 fraudByYear.put(year, fraudByYear.get(year) + 1);

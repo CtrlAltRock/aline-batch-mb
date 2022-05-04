@@ -10,9 +10,8 @@ public class ErrorProcessor implements ItemProcessor<TransactRead, TransactRead>
 
     @Override
     public TransactRead process(TransactRead item) {
-        if (!item.getErrors().isBlank() || item.getFraud()) {
-            errorsFound.makeError(item.getUser(), item.getDate(), item.getErrors(), item.getFraud());
-        }
+        errorsFound.makeError(item.getUser(), item.getDate(), item.getErrors(), item.getFraud());
+        
 
         return item;
     }

@@ -3,16 +3,16 @@ package com.smoothstack.transactionbatch.report;
 import java.time.LocalDateTime;
 import java.util.AbstractMap;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import com.smoothstack.transactionbatch.model.ErrorBase;
 
 public class ErrorsFound {
     // Map user id's to errors that user has
     private AbstractMap<Long, List<ErrorBase>> errorsFound = new ConcurrentHashMap<>();
+
     private static ErrorsFound INSTANCE = null;
 
     private ErrorsFound() {}
@@ -30,18 +30,19 @@ public class ErrorsFound {
 
     public AbstractMap<Long, List<ErrorBase>> getErrorsFound() { return errorsFound; }
 
-    public Collection<ErrorBase> getErrors() { 
+    public Stream<ErrorBase> getErrors() { 
         return errorsFound.values().stream()
             .flatMap(n -> n.stream())
-            .collect(Collectors.toList());
+            .filter(n -> !n.getErrorMessage().isBlank());
     }
 
-    public Collection<ErrorBase> getFrauds() {
+    public Stream<ErrorBase> getFrauds() {
         return errorsFound.values().stream()
             .flatMap(n -> n.stream())
-            .filter(n -> n.isFraud())
-            .collect(Collectors.toList());
+            .filter(n -> n.isFraud());
     }
+
+    public long getUserCount() { return errorsFound.size(); }
 
     public void makeError(long user, LocalDateTime transactionTime, String message, boolean isFraud) {
         if (!errorsFound.containsKey(user)) {
@@ -51,11 +52,17 @@ public class ErrorsFound {
                 }
             }
         }
-        
-        // ArrayList is unsynchronized
-        synchronized (this) {
-            List<ErrorBase> userErrors = errorsFound.get(user);
-            userErrors.add(new ErrorBase(user, transactionTime, message, isFraud));
+        if (!message.isBlank() || isFraud) {
+            // ArrayList is unsynchronized
+            synchronized (this) {
+                List<ErrorBase> userErrors = errorsFound.get(user);
+                userErrors.add(new ErrorBase(user, transactionTime, message, isFraud));
+            }
         }
+    }
+
+    // Clean up after writing
+    public void clearMap() {
+        errorsFound.clear();
     }
 }

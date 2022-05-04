@@ -16,10 +16,8 @@ import com.smoothstack.transactionbatch.model.CardBase;
 import com.thoughtworks.xstream.XStream;
 
 public class CardWriter {
-    public static void write(String filePath) throws IOException {
+    public static void write(CardGenerator cards, String filePath) throws IOException {
         XStream xStream = new XStream();
-
-        final CardGenerator cards = CardGenerator.getInstance();
 
         List<String> toWrite = new ArrayList<>();
         toWrite.addAll(Arrays.asList("<?xml version=\"1.0\" encoding=\"UTF-8\"?>", "<GeneratedCards>"));

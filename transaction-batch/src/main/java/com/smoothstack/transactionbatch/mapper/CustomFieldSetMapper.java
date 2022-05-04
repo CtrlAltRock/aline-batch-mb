@@ -32,7 +32,8 @@ public class CustomFieldSetMapper implements FieldSetMapper<TransactRead> {
         String state = fieldSet.readString("state");
         String zip = fieldSet.readString("zip");
         int mcc = fieldSet.readInt("mcc");
-        String errors = fieldSet.readString("errors");
+        // Remove quotes or other marks
+        String errors = fieldSet.readString("errors").replaceAll("[^a-zA-Z\\s]", "");
 
         boolean isFraud = false;
 

@@ -7,6 +7,7 @@ import com.smoothstack.transactionbatch.dto.GeneratorRequest;
 
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.JobExecution;
+import org.springframework.batch.core.JobParameters;
 import org.springframework.batch.core.JobParametersBuilder;
 import org.springframework.batch.core.launch.JobLauncher;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,17 +31,26 @@ public class BatchController {
 
     @PostMapping(path = "/load", consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
     public ResponseEntity<String> generateUsers(@RequestBody GeneratorRequest req) throws Exception {
-        JobParametersBuilder jobParameters = new JobParametersBuilder()
-            .addString("inputFile", "input/test2.csv").addDate("time", Date.from(Instant.now()));
+        JobExecution exec = jobLauncher.run(job, parameterBuilder(req));
 
+        String status = exec.getExitStatus().getExitCode();
+
+        if (!status.equals("COMPLETED")) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(status);
+        }
+
+        return ResponseEntity.status(HttpStatus.PARTIAL_CONTENT).body(status);
+    }
+
+    private JobParameters parameterBuilder(GeneratorRequest req) {
+        JobParametersBuilder jobParameters = new JobParametersBuilder()
+            .addString("inputFile", "input/card_transaction.v1.csv").addDate("time", Date.from(Instant.now()));
 
         // Allow to not kick off data generation based on form passed in post data
-        if (req.getDataEnrich() != null) jobParameters.addString("enrich", req.getDataEnrich().toLowerCase());
+        if (req.getDataEnrich() != null) jobParameters.addString("enrich", req.getDataEnrich().toString());
 
-        if (req.getDataAnalyze() != null) jobParameters.addString("analyze", req.getDataAnalyze().toLowerCase());
+        if (req.getDataAnalyze() != null) jobParameters.addString("analyze", req.getDataAnalyze().toString());
 
-        JobExecution exec = jobLauncher.run(job, jobParameters.toJobParameters());
-
-        return ResponseEntity.status(HttpStatus.PARTIAL_CONTENT).body(exec.getExitStatus().getExitCode());
+        return jobParameters.toJobParameters();
     }
 }
