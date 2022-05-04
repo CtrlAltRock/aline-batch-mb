@@ -8,6 +8,7 @@ import com.smoothstack.transactionbatch.processor.CardProcessor;
 import com.smoothstack.transactionbatch.processor.MerchantProcessor;
 import com.smoothstack.transactionbatch.processor.UserProcessor;
 import com.smoothstack.transactionbatch.processor.analysis.DepositProcessor;
+import com.smoothstack.transactionbatch.processor.analysis.ErrorProcessor;
 import com.smoothstack.transactionbatch.tasklet.EnrichWriter;
 import com.smoothstack.transactionbatch.tasklet.NullTasklet;
 import com.smoothstack.transactionbatch.tasklet.ReportWriter;
@@ -72,7 +73,7 @@ public class CompositeBatch {
         }
 
         if (analyze != null && !analyze.equals("false")) {
-            processor.setDelegates(Arrays.asList(new DepositProcessor()));
+            processor.setDelegates(Arrays.asList(new DepositProcessor(), new ErrorProcessor()));
         }
 
         return processor;

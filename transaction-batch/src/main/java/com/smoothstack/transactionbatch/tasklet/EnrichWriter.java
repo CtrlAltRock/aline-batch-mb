@@ -20,7 +20,6 @@ public class EnrichWriter implements Tasklet {
 
     @Override
     public RepeatStatus execute(StepContribution contrib, ChunkContext cont) throws Exception {
-        log.info("Hello??");
         try {
             UserWriter.write(basePath);
         } catch (IOException e) {
