@@ -116,9 +116,11 @@ public class FraudByYearTests {
 
         assertNotNull(errors.getErrorsFound());
 
-        assertEquals(126, errors.getFrauds().size());
+        List<ErrorBase> frauds = errors.getFrauds().collect(Collectors.toList());
 
-        ErrorBase fraud = new ArrayList<ErrorBase>(errors.getFrauds()).get(0);
+        assertEquals(126, frauds.size());
+
+        ErrorBase fraud = frauds.get(0);
 
         assertEquals(0, fraud.getUserId());
         assertEquals(LocalDateTime.of(2015, 11, 15, 12, 55), fraud.getTransactionTime());

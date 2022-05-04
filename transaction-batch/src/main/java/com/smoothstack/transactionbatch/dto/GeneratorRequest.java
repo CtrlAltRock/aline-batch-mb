@@ -8,6 +8,6 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 public class GeneratorRequest {
-    private String dataEnrich;
-    private String dataAnalyze;
+    private Boolean dataEnrich;
+    private Boolean dataAnalyze;
 }

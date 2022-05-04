@@ -5,6 +5,7 @@ import java.io.IOException;
 
 import com.smoothstack.transactionbatch.tasklet.report.DepositWriter;
 import com.smoothstack.transactionbatch.tasklet.report.FraudByYear;
+import com.smoothstack.transactionbatch.tasklet.report.InsufficientOnce;
 
 import org.springframework.batch.core.StepContribution;
 import org.springframework.batch.core.scope.context.ChunkContext;
@@ -29,6 +30,12 @@ public class ReportWriter implements Tasklet {
             FraudByYear.write(basePath);
         } catch (IOException e) {
             log.error("Fraud by Year writer error: {}", e.getMessage());
+        }
+
+        try {
+            InsufficientOnce.write(basePath);
+        } catch (IOException e) {
+            log.error("Insufficient writer error: {}", e.getMessage());
         }
 
         return RepeatStatus.FINISHED;

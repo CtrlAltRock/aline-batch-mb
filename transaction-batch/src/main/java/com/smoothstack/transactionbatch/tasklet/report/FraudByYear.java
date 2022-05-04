@@ -8,7 +8,6 @@ import java.nio.file.StandardOpenOption;
 import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -47,11 +46,11 @@ public class FraudByYear {
     }
 
     // Return stream to save collecting until we convert to xml
-    private static Stream<YearBy> generateReports(Collection<ErrorBase> errors) {
+    private static Stream<YearBy> generateReports(Stream<ErrorBase> errors) {
         final AbstractMap<Integer, Integer> fraudByYear = new HashMap<>();
 
         // Increment for each fraud report per year
-        errors.stream().forEach((n) -> {
+        errors.forEach((n) -> {
             int year = n.getTransactionTime().getYear();
             if (fraudByYear.containsKey(year)) {
                 fraudByYear.put(year, fraudByYear.get(year) + 1);
