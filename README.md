@@ -1,7 +1,3 @@
-# aline-batch-mb
-
-
-
 # Aline Financial Batch Enrichment and Analytics
 
 ## Description
