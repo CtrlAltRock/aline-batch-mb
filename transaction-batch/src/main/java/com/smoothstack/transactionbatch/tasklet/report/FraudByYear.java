@@ -1,5 +1,7 @@
 package com.smoothstack.transactionbatch.tasklet.report;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.AbstractMap;
 import java.util.Collection;
 import java.util.HashMap;
@@ -17,6 +19,7 @@ public class FraudByYear {
         XStream xStream = new XStream();
         
         return generateReports(reportsContainer.getFrauds())
+            .sorted((n1, n2) -> Integer.compare(n1.getYear(), n2.getYear()))
             .map(n -> xStream.toXML(n))
             .collect(Collectors.toList());
     }
@@ -35,11 +38,16 @@ public class FraudByYear {
             }
         });
 
-        double totalFrauds = (double) fraudByYear.values().stream().mapToInt(Integer::intValue).sum();
+        BigDecimal totalFrauds = BigDecimal.valueOf(fraudByYear.values().stream().mapToInt(Integer::intValue).sum());
 
         return fraudByYear.entrySet().stream()
             .map((Map.Entry<Integer, Integer> n) -> {
-                String percent = String.format("%1.3f%%", (n.getValue() / totalFrauds) * 100);
+                String percent = String.format(
+                    "%s%%",
+                    BigDecimal.valueOf(n.getValue()).divide(totalFrauds, 6, RoundingMode.HALF_UP)
+                    .movePointRight(2)
+                    .toPlainString()
+                );
                 return new YearBy("Fraud percent by Year", n.getKey(), percent);
             });
     }

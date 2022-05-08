@@ -1,9 +1,9 @@
 package com.smoothstack.transactionbatch.generator;
 
-import java.util.AbstractMap;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.Optional;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 import com.github.javafaker.Faker;
@@ -13,7 +13,7 @@ public class UserGenerator {
     private static UserGenerator INSTANCE = null;
 
     private final Faker faker = new Faker();
-    private static final AbstractMap<Long, UserBase> context = new ConcurrentHashMap<>();
+    private static final Set<Long> context = new HashSet<>();
 
     private UserGenerator() {}
 
@@ -28,13 +28,13 @@ public class UserGenerator {
         return INSTANCE;
     }
 
-    public AbstractMap<Long, UserBase> getContext() { return context; }
+    public Set<Long> getContext() { return context; }
 
     // For each unique user id, generate a fake name and account information
     public Optional<UserBase> generateUser(long id) {
-        if (!context.containsKey(id)) {
+        if (!context.contains(id)) {
             synchronized (this) {
-                if (!context.containsKey(id)) {
+                if (!context.contains(id)) {
                     String firstName = faker.name().firstName();
                     String middleName = faker.name().firstName();
                     String lastName = faker.name().lastName();
@@ -67,7 +67,7 @@ public class UserGenerator {
                         stuff[1]
                     );
 
-                    context.put(id, newUser);
+                    context.add(id);
 
                     return Optional.of(newUser);
                 }

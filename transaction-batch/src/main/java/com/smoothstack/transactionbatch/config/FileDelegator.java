@@ -4,6 +4,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
 
+// Each chunk needs a unique file name to write to
 public class FileDelegator {
     private static Map<String, AtomicLong> delegator = new ConcurrentHashMap<>();
 
@@ -19,6 +20,7 @@ public class FileDelegator {
         return new StringBuilder()
             .append(context)
             .append(delegator.get(context).incrementAndGet())
+            .append(".xml")
             .toString();
     }
 }

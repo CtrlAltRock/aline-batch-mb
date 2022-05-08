@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.smoothstack.transactionbatch.report.ReportsContainer;
-import com.smoothstack.transactionbatch.tasklet.report.DepositWriter;
+import com.smoothstack.transactionbatch.tasklet.report.DepositReporter;
 import com.smoothstack.transactionbatch.tasklet.report.FraudByYear;
 import com.smoothstack.transactionbatch.tasklet.report.InsufficientMultiple;
 import com.smoothstack.transactionbatch.tasklet.report.InsufficientOnce;
@@ -33,7 +33,7 @@ public class ReportWriter implements Tasklet {
 
             deposits.add("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<Deposits>");
 
-            deposits.addAll(DepositWriter.getReports(reportsContainer));
+            deposits.addAll(DepositReporter.getReports(reportsContainer));
 
             deposits.add("</Deposits>");
 

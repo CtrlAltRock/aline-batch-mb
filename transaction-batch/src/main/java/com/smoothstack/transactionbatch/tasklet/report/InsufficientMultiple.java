@@ -17,7 +17,7 @@ public class InsufficientMultiple {
 
         UserErrorReport report = generateReports(
             reportsContainer.getErrors(), 
-            new BigDecimal(reportsContainer.getUserCount())
+            BigDecimal.valueOf(reportsContainer.getUserCount())
         );
 
         return xStream.toXML(report);       
@@ -34,13 +34,13 @@ public class InsufficientMultiple {
                 }
             });
 
-        BigDecimal repeatOffenders = new BigDecimal(users.values().stream()
+        BigDecimal repeatOffenders = BigDecimal.valueOf(users.values().stream()
             .filter(n -> n)
             .collect(Collectors.toList())
             .size()
         );
 
-        String percent = String.format("%s%%", repeatOffenders.divide(userCount, 6, RoundingMode.UNNECESSARY)
+        String percent = String.format("%s%%", repeatOffenders.divide(userCount, 6, RoundingMode.HALF_UP)
             // Convert decimal to percent value
             .movePointRight(2)
             .toPlainString()

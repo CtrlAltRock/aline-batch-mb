@@ -1,14 +1,18 @@
 package com.smoothstack.transactionbatch.config;
 
-import java.util.Arrays;
+import java.util.ArrayList;
+import java.util.List;
 
 import com.smoothstack.transactionbatch.mapper.CustomFieldSetMapper;
 import com.smoothstack.transactionbatch.model.TransactRead;
-import com.smoothstack.transactionbatch.tasklet.EnrichWriter;
 import com.smoothstack.transactionbatch.tasklet.NullTasklet;
 import com.smoothstack.transactionbatch.tasklet.ReportWriter;
-import com.smoothstack.transactionbatch.writer.ErrorReporter;
-import com.smoothstack.transactionbatch.writer.MerchantReporter;
+import com.smoothstack.transactionbatch.writer.enrich.CardsWriter;
+import com.smoothstack.transactionbatch.writer.enrich.MerchantsWriter;
+import com.smoothstack.transactionbatch.writer.enrich.UsersWriter;
+import com.smoothstack.transactionbatch.writer.reports.DepositWriter;
+import com.smoothstack.transactionbatch.writer.reports.ErrorReporter;
+import com.smoothstack.transactionbatch.writer.reports.MerchantReporter;
 
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
@@ -18,6 +22,7 @@ import org.springframework.batch.core.configuration.annotation.StepBuilderFactor
 import org.springframework.batch.core.configuration.annotation.StepScope;
 import org.springframework.batch.core.launch.support.RunIdIncrementer;
 import org.springframework.batch.core.step.tasklet.Tasklet;
+import org.springframework.batch.item.ItemWriter;
 import org.springframework.batch.item.file.FlatFileItemReader;
 import org.springframework.batch.item.file.builder.FlatFileItemReaderBuilder;
 import org.springframework.batch.item.support.CompositeItemWriter;
@@ -64,28 +69,23 @@ public class CompositeBatch {
     ) {
         CompositeItemWriter<TransactRead> writer = new CompositeItemWriter<>();
 
-        if (enrich != null && !enrich.equals("false")) {
+        List<ItemWriter<? super TransactRead>> writers = new ArrayList<>();
 
+        if (enrich != null && !enrich.equals("false")) {
+            writers.add(new UsersWriter());
+            writers.add(new CardsWriter());
+            writers.add(new MerchantsWriter());
         }
 
         if (analyze != null && !analyze.equals("false")) {
-            writer.setDelegates(Arrays.asList(
-                new MerchantReporter(),
-                new ErrorReporter()
-            ));
+            writers.add(new DepositWriter());
+            writers.add(new ErrorReporter());
+            writers.add(new MerchantReporter());
         }
 
+        writer.setDelegates(writers);
+
         return writer;
-    }
-
-    @Bean
-    @StepScope
-    public Tasklet configureEnrichTasklet(
-        @Value("#{jobParameters['enrich']}") String enrich
-    ) {
-        if (enrich == null || enrich.equals("false")) return new NullTasklet();
-
-        return new EnrichWriter();
     }
 
     @Bean
@@ -101,7 +101,7 @@ public class CompositeBatch {
     @Bean
     public Step compositeStep() {
         return steps.get("Composite Step")
-            .<TransactRead, TransactRead>chunk(5000)
+            .<TransactRead, TransactRead>chunk(500000)
             .reader(transactionReader( null ))
             .writer(compositeItemWriter(null, null))
             .allowStartIfComplete(true)

@@ -16,7 +16,7 @@ public class InsufficientOnce {
 
         UserErrorReport report = generateReports(
             reportsContainer.getErrors(), 
-            new BigDecimal(reportsContainer.getUserCount())
+            BigDecimal.valueOf(reportsContainer.getUserCount())
         );
 
         return xStream.toXML(report);        
@@ -26,8 +26,8 @@ public class InsufficientOnce {
         HashSet<Long> users = new HashSet<>();
         errors.filter(n -> (n.getErrorMessage().equals("Insufficient Balance"))).forEach(n -> users.add(n.getUserId()));
 
-        String percent = String.format("%s%%", new BigDecimal(users.size())
-            .divide(userCount, 6, RoundingMode.UNNECESSARY)
+        String percent = String.format("%s%%", BigDecimal.valueOf(users.size())
+            .divide(userCount, 6, RoundingMode.HALF_UP)
             .movePointRight(2)
         );
 
