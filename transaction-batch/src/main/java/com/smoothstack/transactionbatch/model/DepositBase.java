@@ -12,10 +12,15 @@ import lombok.Setter;
 @XmlRootElement
 public class DepositBase {
     private long id;
-    private BigDecimal currentBalance;
+    private BigDecimal amount;
 
     public DepositBase(long user) {
         this.id = user;
-        this.currentBalance = new BigDecimal(0).setScale(2);
+        this.amount = new BigDecimal(0).setScale(2);
+    }
+
+    public DepositBase(long user, BigDecimal amount) {
+        this.id = user;
+        this.amount = amount;
     }
 }

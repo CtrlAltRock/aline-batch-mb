@@ -1,12 +1,20 @@
 package com.smoothstack.transactionbatch.tasklet;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.OpenOption;
+import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
+import java.util.ArrayList;
+import java.util.List;
 
-import com.smoothstack.transactionbatch.report.Deposit;
-import com.smoothstack.transactionbatch.report.ErrorsFound;
+import com.smoothstack.transactionbatch.report.ReportsContainer;
 import com.smoothstack.transactionbatch.tasklet.report.DepositWriter;
 import com.smoothstack.transactionbatch.tasklet.report.FraudByYear;
+import com.smoothstack.transactionbatch.tasklet.report.InsufficientMultiple;
 import com.smoothstack.transactionbatch.tasklet.report.InsufficientOnce;
+import com.smoothstack.transactionbatch.tasklet.report.UniqueMerchantsReport;
 
 import org.springframework.batch.core.StepContribution;
 import org.springframework.batch.core.scope.context.ChunkContext;
@@ -16,27 +24,49 @@ import org.springframework.batch.repeat.RepeatStatus;
 public class ReportWriter implements Tasklet {
     private final String basePath = new File("").getAbsolutePath();
 
-    private final Deposit depo = Deposit.getInstance();
-
-    private final ErrorsFound errors = ErrorsFound.getInstance();
+    private final ReportsContainer reportsContainer = ReportsContainer.getInstance();
 
     @Override
     public RepeatStatus execute(StepContribution contrib, ChunkContext cont) throws Exception {
-        try {            
-            DepositWriter.write(depo, basePath);
-        } finally {
-            depo.clearMap();
-        }
-
         try {
-            FraudByYear.write(errors, basePath);
+            List<String> deposits = new ArrayList<>();
 
-            InsufficientOnce.write(errors, basePath);
+            deposits.add("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<Deposits>");
+
+            deposits.addAll(DepositWriter.getReports(reportsContainer));
+
+            deposits.add("</Deposits>");
+
+            fileWriter("output/reports/Deposits.xml", deposits);
+
+            List<String> reports = new ArrayList<>();
+
+            reports.add("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<Reports>");
+
+            reports.add(UniqueMerchantsReport.getReport(reportsContainer));
+
+            reports.addAll(FraudByYear.getReports(reportsContainer));
+
+            reports.add(InsufficientOnce.getReport(reportsContainer));
+
+            reports.add(InsufficientMultiple.getReport(reportsContainer));
+
+            reports.add("</Reports>");
+
+            fileWriter("output/reports/MainReports.xml", reports);
+            
         } finally {
-            errors.clearMap();
+            reportsContainer.clearCache();
         }
-
 
         return RepeatStatus.FINISHED;
+    }
+
+    private void fileWriter(String filePath, List<String> toWrite) throws IOException {
+        Files.write(
+                Paths.get(this.basePath, filePath),
+                toWrite,
+                new OpenOption[]{StandardOpenOption.CREATE, StandardOpenOption.WRITE, StandardOpenOption.TRUNCATE_EXISTING}
+            );
     }
 }

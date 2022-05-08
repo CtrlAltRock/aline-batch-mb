@@ -41,7 +41,12 @@ public class UserGenerator {
 
                     Date dateOfBirth = faker.date().past(80 * 365, 18 * 365, TimeUnit.DAYS);
 
-                    String email = firstName + "." + lastName + "@smoothstack.gov";
+                    String email = new StringBuilder()
+                        .append(firstName)
+                        .append(".")
+                        .append(lastName)
+                        .append("@smoothstack.gov")
+                        .toString();
 
                     String phoneNumber = faker.phoneNumber().cellPhone();
 

@@ -9,10 +9,7 @@ import lombok.Getter;
 @Getter
 @XmlRootElement
 public class YearBy {
+    private String title;
     private int year;
     private String percentage;
-
-    public static YearBy makeYearBy(int year, String percent) {
-        return new YearBy(year, percent);
-    }
 }

@@ -1,44 +1,40 @@
 package com.smoothstack.transactionbatch.report;
 
-import java.math.BigDecimal;
 import java.util.AbstractMap;
+import java.util.Collection;
+import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Stream;
 
 import com.smoothstack.transactionbatch.model.DepositBase;
 
 public class Deposit {
     private AbstractMap<Long, DepositBase> accountBalance = new ConcurrentHashMap<>();
-    private static Deposit INSTANCE = null;
 
-    private Deposit() {}
+    public Collection<DepositBase> getDeposits() { return accountBalance.values(); }
 
-    public static Deposit getInstance() {
-        if (INSTANCE == null) {
-            synchronized(Deposit.class) {
-                if (INSTANCE == null) {
-                    INSTANCE = new Deposit();
-                }
-            }
-        }
-        return INSTANCE;
-    }
+    public void makeDeposit(DepositBase deposit) {
+        long user = deposit.getId();
 
-    public AbstractMap<Long, DepositBase> getBalances() { return accountBalance; }
-
-    public void makeDeposit(long user, BigDecimal amount) {
         if (!accountBalance.containsKey(user)) {
             synchronized (this) {
                 if (!accountBalance.containsKey(user)) {
                     // Scale set to two for financial transactions
-                    accountBalance.put(user, new DepositBase(user));
+                    accountBalance.put(user, deposit);
                 }
             }
-        }
-        
-        synchronized (this) {
-            DepositBase currentBalance = accountBalance.get(user);
-            currentBalance.setCurrentBalance(amount.add(currentBalance.getCurrentBalance()));
-        }
+        } else {
+            synchronized (this) {
+                DepositBase currentBalance = accountBalance.get(user);
+                currentBalance.setAmount(
+                    deposit.getAmount().add(currentBalance.getAmount())
+                );
+            }
+        }       
+    }
+
+    public void makeDeposits(Stream<DepositBase> deposits) {
+        deposits.forEach(n -> makeDeposit(n));
     }
 
     // Clean up after writing

@@ -4,15 +4,11 @@ import java.util.Arrays;
 
 import com.smoothstack.transactionbatch.mapper.CustomFieldSetMapper;
 import com.smoothstack.transactionbatch.model.TransactRead;
-import com.smoothstack.transactionbatch.processor.CardProcessor;
-import com.smoothstack.transactionbatch.processor.MerchantProcessor;
-import com.smoothstack.transactionbatch.processor.UserProcessor;
-import com.smoothstack.transactionbatch.processor.analysis.DepositProcessor;
-import com.smoothstack.transactionbatch.processor.analysis.ErrorProcessor;
 import com.smoothstack.transactionbatch.tasklet.EnrichWriter;
 import com.smoothstack.transactionbatch.tasklet.NullTasklet;
 import com.smoothstack.transactionbatch.tasklet.ReportWriter;
-import com.smoothstack.transactionbatch.writer.ConsoleItemWriter;
+import com.smoothstack.transactionbatch.writer.ErrorReporter;
+import com.smoothstack.transactionbatch.writer.MerchantReporter;
 
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
@@ -24,7 +20,7 @@ import org.springframework.batch.core.launch.support.RunIdIncrementer;
 import org.springframework.batch.core.step.tasklet.Tasklet;
 import org.springframework.batch.item.file.FlatFileItemReader;
 import org.springframework.batch.item.file.builder.FlatFileItemReaderBuilder;
-import org.springframework.batch.item.support.CompositeItemProcessor;
+import org.springframework.batch.item.support.CompositeItemWriter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -62,21 +58,24 @@ public class CompositeBatch {
 
     @Bean
     @StepScope
-    public CompositeItemProcessor<TransactRead, TransactRead> compositeProcessor(
+    public CompositeItemWriter<TransactRead> compositeItemWriter(
         @Value("#{jobParameters['enrich']}") String enrich,
         @Value("#{jobParameters['analyze']}") String analyze
     ) {
-        CompositeItemProcessor<TransactRead, TransactRead> processor = new CompositeItemProcessor<>();
+        CompositeItemWriter<TransactRead> writer = new CompositeItemWriter<>();
 
         if (enrich != null && !enrich.equals("false")) {
-            processor.setDelegates(Arrays.asList(new UserProcessor(), new CardProcessor(), new MerchantProcessor()));
+
         }
 
         if (analyze != null && !analyze.equals("false")) {
-            processor.setDelegates(Arrays.asList(new DepositProcessor(), new ErrorProcessor()));
+            writer.setDelegates(Arrays.asList(
+                new MerchantReporter(),
+                new ErrorReporter()
+            ));
         }
 
-        return processor;
+        return writer;
     }
 
     @Bean
@@ -92,9 +91,9 @@ public class CompositeBatch {
     @Bean
     @StepScope
     public Tasklet configureReportTasklet(
-        @Value("#{jobParameters['analyze']}") String anaylze
+        @Value("#{jobParameters['analyze']}") String analyze
     ) {
-        if (anaylze == null || anaylze.equals("false")) return new NullTasklet();
+        if (analyze == null || analyze.equals("false")) return new NullTasklet();
 
         return new ReportWriter();
     }
@@ -102,21 +101,14 @@ public class CompositeBatch {
     @Bean
     public Step compositeStep() {
         return steps.get("Composite Step")
-            .<TransactRead, TransactRead>chunk(1000)
+            .<TransactRead, TransactRead>chunk(5000)
             .reader(transactionReader( null ))
-            .processor(compositeProcessor(null, null))
-            .writer(new ConsoleItemWriter())
+            .writer(compositeItemWriter(null, null))
             .allowStartIfComplete(true)
             .taskExecutor(taskExecutor)
             .build();
     }
 
-    @Bean
-    public Step writerEnrichStep() {
-        return steps.get("Enrich Writer Step")
-            .tasklet(configureEnrichTasklet( null ))
-            .build();
-    }
 
     @Bean
     public Step writerReportStep() {
@@ -130,7 +122,6 @@ public class CompositeBatch {
         return jobs.get("Composite Batch")
             .incrementer(new RunIdIncrementer())
             .start(compositeStep())
-            .next(writerEnrichStep())
             .next(writerReportStep())
             .build();
     }
