@@ -7,7 +7,7 @@ import java.util.stream.Stream;
 public class Merchants {
     private Set<Long> uniqueMerchants = new HashSet<>();
 
-    public void addMerchants(Stream<Long> merchants) {
+    public synchronized void addMerchants(Stream<Long> merchants) {
         merchants.forEach(n -> uniqueMerchants.add(n));
     }
 

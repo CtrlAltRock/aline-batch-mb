@@ -58,7 +58,7 @@ public class ReportsContainer {
     }
 
     public void addMerchants(List<? extends TransactRead> merchants) { 
-        Stream<Long> merch = merchants.parallelStream()
+        Stream<Long> merch = merchants.stream()
             .map(n -> n.getMerchant());
         
         merchantInstance.addMerchants(merch);
