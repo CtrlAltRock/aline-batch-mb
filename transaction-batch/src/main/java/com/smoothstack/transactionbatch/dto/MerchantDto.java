@@ -10,5 +10,5 @@ public class MerchantDto {
     private String city;
     private String state;
     private String zip;
-    private String mcc;
+    private int mcc;
 }

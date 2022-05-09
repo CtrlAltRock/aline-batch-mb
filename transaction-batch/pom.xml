@@ -67,7 +67,7 @@
 			<groupId>com.vangogiel.luhnalgorithms</groupId>
 			<artifactId>luhn-algorithms</artifactId>
 			<version>1.0.0</version>
-		</dependency>
+		</dependency>	
 	</dependencies>
 
 	<build>

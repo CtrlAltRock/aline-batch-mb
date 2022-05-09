@@ -1,24 +1,20 @@
 package com.smoothstack.transactionbatch.model;
 
+import java.math.BigDecimal;
+
 import javax.xml.bind.annotation.XmlRootElement;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
 
 @Getter
-@Setter
-@NoArgsConstructor
 @AllArgsConstructor
-@ToString
 @XmlRootElement
-public class MerchantBase {
+public class TransactBase {
     private long id;
-    private String name;
+    private long merchant;
     private String city;
-    private String state;
     private String zip;
-    private int mcc;
+    private String use;
+    private BigDecimal amount;
 }

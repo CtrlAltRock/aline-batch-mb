@@ -48,7 +48,7 @@ public class GeneratorTests {
 
     @Test
     public void correctMerchantGeneration() {
-        MerchantDto mer = new MerchantDto(1, "Chicago", "IL", "60465", "111");
+        MerchantDto mer = new MerchantDto(1, "Chicago", "IL", "60465", 111);
         Optional<MerchantBase> testMerch = merchantGenerator.generateMerchant(mer);
 
         assertTrue(testMerch.isPresent());

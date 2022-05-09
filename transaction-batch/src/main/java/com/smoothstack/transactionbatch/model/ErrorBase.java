@@ -16,5 +16,5 @@ public class ErrorBase {
     private long userId;
     private LocalDateTime transactionTime;
     private String errorMessage;
-    private boolean isFraud;
+    private boolean fraud;
 }

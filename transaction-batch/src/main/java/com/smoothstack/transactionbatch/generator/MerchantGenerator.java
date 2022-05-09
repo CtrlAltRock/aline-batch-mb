@@ -1,9 +1,8 @@
 package com.smoothstack.transactionbatch.generator;
 
-import java.util.AbstractMap;
-import java.util.Collection;
+import java.util.HashSet;
 import java.util.Optional;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.Set;
 
 import com.github.javafaker.Faker;
 import com.smoothstack.transactionbatch.dto.MerchantDto;
@@ -13,7 +12,7 @@ public class MerchantGenerator {
     private static MerchantGenerator INSTANCE = null;
 
     private final Faker faker = new Faker();
-    private static final AbstractMap<Long, MerchantBase> context = new ConcurrentHashMap<>();
+    private final Set<Long> context = new HashSet<>();
 
     private MerchantGenerator() {}
 
@@ -28,17 +27,17 @@ public class MerchantGenerator {
         return INSTANCE;
     }
 
-    public Collection<MerchantBase> getContext() { return context.values(); }
+    public Set<Long> getContext() { return context; }
 
     public Optional<MerchantBase> generateMerchant(MerchantDto merch) {
         long id = merch.getId();
-        if (!context.containsKey(id)) {
+        if (!context.contains(id)) {
             synchronized (this) {
-                if (!context.containsKey(id)) {
+                if (!context.contains(id)) {
                     String name = faker.company().name();
                     MerchantBase newMerchant = new MerchantBase(id, name, merch.getCity(), merch.getState(), merch.getZip(), merch.getMcc());
 
-                    context.put(id, newMerchant);
+                    context.add(id);
 
                     return Optional.of(newMerchant);
                 }
