@@ -1,15 +1,18 @@
 package com.smoothstack.transactionbatch.report;
 
 import java.math.BigDecimal;
+import java.util.AbstractMap;
 import java.util.Collection;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Stream;
 
+import com.smoothstack.transactionbatch.dto.LocationDto;
 import com.smoothstack.transactionbatch.model.DepositBase;
 import com.smoothstack.transactionbatch.model.ErrorBase;
 import com.smoothstack.transactionbatch.model.TransactRead;
 
-// Aggregate information from writer in this class
+// Aggregate relevant information into streams here
 public class ReportsContainer {
     private static ReportsContainer INSTANCE = null;
 
@@ -18,6 +21,8 @@ public class ReportsContainer {
     private ErrorsFound errorsFound = new ErrorsFound();
 
     private Deposit depo = new Deposit();
+
+    private LocationTransaction loca = new LocationTransaction();
 
     private ReportsContainer() { }
 
@@ -66,9 +71,25 @@ public class ReportsContainer {
 
     public int getNumOfMerchants() { return merchantInstance.getNumOfMerchants(); }
 
+    public AbstractMap<Integer, AtomicLong> getZipTransacts() { return loca.getZipTransacts(); }
+
+    public void makeLocationTransacts(List<? extends TransactRead> items) {
+        Stream<LocationDto> locations = items.parallelStream()
+        // Filter out online transactions 
+        .filter(n -> (!n.getZip().isBlank() && !n.getCity().isBlank()))
+        .map(n -> {
+            String oldZip = n.getZip();
+            int zip = Integer.parseInt(oldZip.substring(0, oldZip.length() - 2));
+            return new LocationDto(zip, n.getCity());
+        });
+
+        loca.makeTransactions(locations);
+    }
+
     public void clearCache() {
         errorsFound.clearMap();
         merchantInstance.clear();
         depo.clearMap();
+        loca.clearMaps();
     }
 }

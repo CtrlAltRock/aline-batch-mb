@@ -12,6 +12,7 @@ import com.smoothstack.transactionbatch.writer.enrich.MerchantsWriter;
 import com.smoothstack.transactionbatch.writer.enrich.UsersWriter;
 import com.smoothstack.transactionbatch.writer.reports.DepositWriter;
 import com.smoothstack.transactionbatch.writer.reports.ErrorReporter;
+import com.smoothstack.transactionbatch.writer.reports.LocationsWriter;
 import com.smoothstack.transactionbatch.writer.reports.MerchantReporter;
 
 import org.springframework.batch.core.Job;
@@ -81,6 +82,7 @@ public class CompositeBatch {
             writers.add(new DepositWriter());
             writers.add(new ErrorReporter());
             writers.add(new MerchantReporter());
+            writers.add(new LocationsWriter());
         }
 
         writer.setDelegates(writers);
