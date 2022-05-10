@@ -101,7 +101,7 @@ public class CompositeBatch {
     @Bean
     public Step compositeStep() {
         return steps.get("Composite Step")
-            .<TransactRead, TransactRead>chunk(500000)
+            .<TransactRead, TransactRead>chunk(75000)
             .reader(transactionReader( null ))
             .writer(compositeItemWriter(null, null))
             .allowStartIfComplete(true)
