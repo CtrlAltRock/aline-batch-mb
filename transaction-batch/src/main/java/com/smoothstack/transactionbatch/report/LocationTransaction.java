@@ -37,13 +37,14 @@ public class LocationTransaction {
                 }
             }
         }
-
+        
         transactByCity.get(city).incrementAndGet();
     }
 
     public void makeTransactions(Stream<LocationDto> locations) {
         locations.forEach(n -> {
             makeZipTransact(n.getZip());
+            makeCityTransact(n.getCity());
         });
     }
 

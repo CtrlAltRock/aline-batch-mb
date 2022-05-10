@@ -73,6 +73,8 @@ public class ReportsContainer {
 
     public AbstractMap<Integer, AtomicLong> getZipTransacts() { return loca.getZipTransacts(); }
 
+    public AbstractMap<String, AtomicLong> getCityTransacts() { return loca.getCityTransacts(); }
+
     public void makeLocationTransacts(List<? extends TransactRead> items) {
         Stream<LocationDto> locations = items.parallelStream()
         // Filter out online transactions 

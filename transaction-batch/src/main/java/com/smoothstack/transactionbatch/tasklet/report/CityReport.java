@@ -10,21 +10,19 @@ import com.smoothstack.transactionbatch.outputdto.LocationReport;
 import com.smoothstack.transactionbatch.report.ReportsContainer;
 import com.thoughtworks.xstream.XStream;
 
-public class ZipReporter {
+public class CityReport {
     public static List<String> getReports(ReportsContainer reportsContainer) {
         XStream xStream = new XStream();
 
-        return generateReports(reportsContainer.getZipTransacts())
+        return generateReports(reportsContainer.getCityTransacts())
             .map(n -> xStream.toXML(n))
             .collect(Collectors.toList());
-
     }
-
-    // Return the top 5 zip codes by transaction amount
-    private static Stream<LocationReport> generateReports(AbstractMap<Integer, AtomicLong> transactions) {
+    
+    private static Stream<LocationReport> generateReports(AbstractMap<String, AtomicLong> transactions) {
         return transactions.entrySet().stream()
         .sorted((n1, n2) -> Long.compare(n2.getValue().get(), n1.getValue().get()))
         .limit(5)
-        .map(n -> new LocationReport("Zip: " + Integer.toString(n.getKey()), n.getValue().get()));
+        .map(n -> new LocationReport("City: " + n.getKey(), n.getValue().get()));
     }
 }
