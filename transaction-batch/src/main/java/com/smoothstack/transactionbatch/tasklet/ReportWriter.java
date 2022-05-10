@@ -10,11 +10,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.smoothstack.transactionbatch.report.ReportsContainer;
+import com.smoothstack.transactionbatch.tasklet.report.CityReport;
 import com.smoothstack.transactionbatch.tasklet.report.DepositReporter;
 import com.smoothstack.transactionbatch.tasklet.report.FraudByYear;
 import com.smoothstack.transactionbatch.tasklet.report.InsufficientMultiple;
 import com.smoothstack.transactionbatch.tasklet.report.InsufficientOnce;
 import com.smoothstack.transactionbatch.tasklet.report.UniqueMerchantsReport;
+import com.smoothstack.transactionbatch.tasklet.report.ZipReporter;
 
 import org.springframework.batch.core.StepContribution;
 import org.springframework.batch.core.scope.context.ChunkContext;
@@ -42,6 +44,10 @@ public class ReportWriter implements Tasklet {
             List<String> reports = new ArrayList<>();
 
             reports.add("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<Reports>");
+
+            reports.addAll(CityReport.getReports(reportsContainer));
+
+            reports.addAll(ZipReporter.getReports(reportsContainer));
 
             reports.add(UniqueMerchantsReport.getReport(reportsContainer));
 
