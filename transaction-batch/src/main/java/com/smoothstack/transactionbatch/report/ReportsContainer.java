@@ -8,6 +8,7 @@ import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Stream;
 
 import com.smoothstack.transactionbatch.dto.LocationDto;
+import com.smoothstack.transactionbatch.dto.RecurringDto;
 import com.smoothstack.transactionbatch.model.DepositBase;
 import com.smoothstack.transactionbatch.model.ErrorBase;
 import com.smoothstack.transactionbatch.model.TransactRead;
@@ -86,6 +87,15 @@ public class ReportsContainer {
         });
 
         loca.makeTransactions(locations);
+    }
+
+    public AbstractMap<String, AtomicLong> getRecurring() { return merchantInstance.getTransactions(); }
+
+    public void makeRecurringTransacts(List<? extends TransactRead> items) {
+        Stream<RecurringDto> transacts = items.parallelStream()
+            .map(n -> new RecurringDto(n.getMerchant(), n.getAmount(), n.getUser(), n.getCard()));
+
+        merchantInstance.addTransactions(transacts);
     }
 
     public void clearCache() {

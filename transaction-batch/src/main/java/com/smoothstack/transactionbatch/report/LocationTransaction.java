@@ -38,6 +38,7 @@ public class LocationTransaction {
             }
         }
         
+        // Does not need synchronization because of atomiclong
         transactByCity.get(city).incrementAndGet();
     }
 

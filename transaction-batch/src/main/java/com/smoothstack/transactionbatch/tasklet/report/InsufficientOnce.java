@@ -14,6 +14,8 @@ public class InsufficientOnce {
     public static String getReport(ReportsContainer reportsContainer) {
         XStream xStream = new XStream();
 
+        xStream.alias("UserErrorReport", UserErrorReport.class);
+
         UserErrorReport report = generateReports(
             reportsContainer.getErrors(), 
             BigDecimal.valueOf(reportsContainer.getUserCount())
