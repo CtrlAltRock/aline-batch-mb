@@ -49,7 +49,7 @@ public class ReportWriter implements Tasklet {
             reports.addAll(RecurringReport.getReports(reportsContainer));
 
             reports.addAll(CityReport.getReports(reportsContainer));
-
+            
             reports.addAll(ZipReporter.getReports(reportsContainer));
 
             reports.add(UniqueMerchantsReport.getReport(reportsContainer));

@@ -107,7 +107,7 @@ public class FraudByYearTests {
     }
 
     @Test
-    public void depositTest() {
+    public void fraudsTest() {
         // Populate errors
         Stream<ErrorBase> foundErrors = transactions.stream()
         .filter(n -> (!n.getErrors().isBlank() || n.getFraud()))

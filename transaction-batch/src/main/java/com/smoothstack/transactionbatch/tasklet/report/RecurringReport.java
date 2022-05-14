@@ -6,7 +6,7 @@ import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import com.smoothstack.transactionbatch.outputdto.Recurrences;
+import com.smoothstack.transactionbatch.dto.outputdto.Recurrences;
 import com.smoothstack.transactionbatch.report.ReportsContainer;
 import com.thoughtworks.xstream.XStream;
 

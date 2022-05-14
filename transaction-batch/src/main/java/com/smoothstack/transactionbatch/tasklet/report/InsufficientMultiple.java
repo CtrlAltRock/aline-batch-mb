@@ -6,8 +6,8 @@ import java.util.HashMap;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import com.smoothstack.transactionbatch.dto.outputdto.UserErrorReport;
 import com.smoothstack.transactionbatch.model.ErrorBase;
-import com.smoothstack.transactionbatch.outputdto.UserErrorReport;
 import com.smoothstack.transactionbatch.report.ReportsContainer;
 import com.thoughtworks.xstream.XStream;
 
@@ -40,11 +40,12 @@ public class InsufficientMultiple {
             .size()
         );
 
-        String percent = String.format("%s%%", repeatOffenders.divide(userCount, 6, RoundingMode.HALF_UP)
+        BigDecimal perce = repeatOffenders
+            .divide(userCount, 6, RoundingMode.HALF_UP)
             // Convert decimal to percent value
-            .movePointRight(2)
-            .toPlainString()
-        );
+            .movePointRight(2);
+
+        String percent = String.format("%s%%", perce);
 
         return new UserErrorReport("Insufficient Balance more than once", percent);
     }

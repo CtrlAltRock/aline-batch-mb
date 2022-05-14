@@ -1,6 +1,6 @@
 package com.smoothstack.transactionbatch.tasklet.report;
 
-import com.smoothstack.transactionbatch.outputdto.ReportBase;
+import com.smoothstack.transactionbatch.dto.outputdto.ReportBase;
 import com.smoothstack.transactionbatch.report.ReportsContainer;
 import com.thoughtworks.xstream.XStream;
 
