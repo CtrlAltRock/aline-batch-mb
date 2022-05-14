@@ -1,45 +1,27 @@
 package com.smoothstack.transactionbatch.tasklet.report;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.OpenOption;
-import java.nio.file.Paths;
-import java.nio.file.StandardOpenOption;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.AbstractMap;
-import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import com.smoothstack.transactionbatch.dto.outputdto.YearBy;
 import com.smoothstack.transactionbatch.model.ErrorBase;
-import com.smoothstack.transactionbatch.outputdto.YearBy;
-import com.smoothstack.transactionbatch.report.ErrorsFound;
+import com.smoothstack.transactionbatch.report.ReportsContainer;
 import com.thoughtworks.xstream.XStream;
 
 public class FraudByYear {
-    public static void write(ErrorsFound errorsFound, String filePath) throws IOException {
+    public static Collection<String> getReports(ReportsContainer reportsContainer) {
         XStream xStream = new XStream();
         
-        List<String> toWrite = new ArrayList<>();
- 
-        toWrite.add("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<Report>");
- 
-        List<String> errorReports = generateReports(errorsFound.getFrauds())
-            .sorted((n1, n2) -> n1.getYear() < n2.getYear() ? -1 : 1)
-            .map((n) -> xStream.toXML(n))
+        return generateReports(reportsContainer.getFrauds())
+            .sorted((n1, n2) -> Integer.compare(n1.getYear(), n2.getYear()))
+            .map(n -> xStream.toXML(n))
             .collect(Collectors.toList());
-
-        toWrite.addAll(errorReports);
-
-        toWrite.add("</Report>");
-
-        Files.write(
-            Paths.get(filePath, "output/reports/YearByFraudReport.xml"),
-            toWrite,
-            new OpenOption[]{StandardOpenOption.CREATE, StandardOpenOption.WRITE, StandardOpenOption.TRUNCATE_EXISTING}
-        );
     }
 
     // Return stream to save collecting until we convert to xml
@@ -56,12 +38,18 @@ public class FraudByYear {
             }
         });
 
-        double totalFrauds = (double) fraudByYear.values().stream().mapToInt(Integer::intValue).sum();
+        BigDecimal totalFrauds = BigDecimal.valueOf(fraudByYear.values().stream().mapToInt(Integer::intValue).sum());
 
         return fraudByYear.entrySet().stream()
             .map((Map.Entry<Integer, Integer> n) -> {
-                String percent = String.format("%1.3f%%", (n.getValue() / totalFrauds) * 100);
-                return new YearBy(n.getKey(), percent);
+                String percent = String.format(
+                    "%s%%",
+                    BigDecimal.valueOf(n.getValue())
+                    .divide(totalFrauds, 6, RoundingMode.HALF_UP)
+                    .movePointRight(2)
+                    .toPlainString()
+                );
+                return new YearBy("Fraud percent by Year", n.getKey(), percent);
             });
     }
 }

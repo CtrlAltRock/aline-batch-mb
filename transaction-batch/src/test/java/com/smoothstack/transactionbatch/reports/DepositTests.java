@@ -6,7 +6,6 @@ import java.math.BigDecimal;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
-import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -77,7 +76,7 @@ public class DepositTests {
                 .collect(Collectors.toList())
         );
 
-        this.depo = Deposit.getInstance();
+        this.depo = new Deposit();
     }
 
     @Test
@@ -105,14 +104,14 @@ public class DepositTests {
         transactions.stream().forEach(n -> {
             BigDecimal amount = n.getAmount();
             if (amount.compareTo(BigDecimal.ZERO) == -1) {
-                depo.makeDeposit(n.getUser(), amount.abs());
+                depo.makeDeposit(new DepositBase(n.getUser(), amount.abs()));
             }
         });
 
-        AbstractMap<Long, DepositBase> deposits = depo.getBalances();
+        List<DepositBase> deposits = depo.getDeposits().stream().collect(Collectors.toList());
 
         assertNotNull(deposits);
         assertEquals(1, deposits.size());
-        assertEquals(new BigDecimal("199.00"), deposits.get(0L).getCurrentBalance());
+        assertEquals(new BigDecimal("199.00"), deposits.get(0).getAmount());
     }
 }

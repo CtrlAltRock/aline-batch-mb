@@ -9,6 +9,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import com.smoothstack.transactionbatch.model.ErrorBase;
 import com.smoothstack.transactionbatch.model.TransactRead;
@@ -85,7 +86,7 @@ public class FraudByYearTests {
                 .collect(Collectors.toList())
         );
 
-        this.errors = ErrorsFound.getInstance();
+        this.errors = new ErrorsFound();
     }
 
     @Test
@@ -106,13 +107,13 @@ public class FraudByYearTests {
     }
 
     @Test
-    public void depositTest() {
+    public void fraudsTest() {
         // Populate errors
-        transactions.forEach(n -> {
-            if (!n.getErrors().isBlank() || n.getFraud()) {
-                errors.makeError(n.getUser(), n.getDate(), n.getErrors(), n.getFraud());
-            }
-        });
+        Stream<ErrorBase> foundErrors = transactions.stream()
+        .filter(n -> (!n.getErrors().isBlank() || n.getFraud()))
+        .map(n -> new ErrorBase(n.getUser(), n.getDate(), n.getErrors(), n.getFraud()));
+
+        errors.makeErrors(foundErrors);
 
         assertNotNull(errors.getErrorsFound());
 

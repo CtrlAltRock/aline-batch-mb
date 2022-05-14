@@ -1,7 +1,9 @@
 package com.smoothstack.transactionbatch.generator;
 
 import java.util.AbstractMap;
+import java.util.HashSet;
 import java.util.Optional;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -9,7 +11,7 @@ import com.smoothstack.transactionbatch.model.CardBase;
 import com.vangogiel.luhnalgorithms.LuhnAlgorithms;
 
 public class CardGenerator {
-    private AbstractMap<Long, AbstractMap<Long, CardBase>> cardList = new ConcurrentHashMap<>();
+    private AbstractMap<Long, Set<Long>> cardList = new ConcurrentHashMap<>();
     private static AtomicLong cardCount = new AtomicLong(0);
     private static CardGenerator INSTANCE = null;
 
@@ -26,20 +28,20 @@ public class CardGenerator {
         return INSTANCE;
     }
 
-    public AbstractMap<Long, AbstractMap<Long, CardBase>> getContext() {return cardList;}
+    public AbstractMap<Long, Set<Long>> getContext() {return cardList;}
 
     public Optional<CardBase> generateCard(long user, long card) {        
         if (!cardList.containsKey(user)) {
             synchronized (CardGenerator.class) {
-                if (!cardList.containsKey(user)) cardList.put(user, new ConcurrentHashMap<>());
+                if (!cardList.containsKey(user)) cardList.put(user, new HashSet<>());
             }
         }
-        if (!cardList.get(user).containsKey(card)) {
+        if (!cardList.get(user).contains(card)) {
             synchronized (CardGenerator.class) {
-                if (!cardList.get(user).containsKey(card)) {
+                if (!cardList.get(user).contains(card)) {
                     CardBase car = new CardBase(cardCount.incrementAndGet(), user, luhnCard());
 
-                    cardList.get(user).put(card, car);
+                    cardList.get(user).add(card);
 
                     return Optional.of(car);
                 }
@@ -51,11 +53,10 @@ public class CardGenerator {
 
     // Uses Luhn Algorithm to generate card numbers
     public String luhnCard() {
-        String cardNumber = Long.toString(LuhnAlgorithms.generateRandomLuhn(16));
+        long cardNumber = LuhnAlgorithms.generateRandomLuhn(16);
 
-        while (cardNumber.length() < 16) cardNumber = "0" + cardNumber;
-
-        return cardNumber;
+        // If number has too few digits, left pad with 0's
+        return String.format("%016d", cardNumber);
     }
 
     // Clean up after writing

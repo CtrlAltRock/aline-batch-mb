@@ -1,6 +1,5 @@
 package com.smoothstack.transactionbatch.report;
 
-import java.time.LocalDateTime;
 import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.List;
@@ -12,21 +11,6 @@ import com.smoothstack.transactionbatch.model.ErrorBase;
 public class ErrorsFound {
     // Map user id's to errors that user has
     private AbstractMap<Long, List<ErrorBase>> errorsFound = new ConcurrentHashMap<>();
-
-    private static ErrorsFound INSTANCE = null;
-
-    private ErrorsFound() {}
-
-    public static ErrorsFound getInstance() {
-        if (INSTANCE == null) {
-            synchronized(Deposit.class) {
-                if (INSTANCE == null) {
-                    INSTANCE = new ErrorsFound();
-                }
-            }
-        }
-        return INSTANCE;
-    }
 
     public AbstractMap<Long, List<ErrorBase>> getErrorsFound() { return errorsFound; }
 
@@ -44,7 +28,9 @@ public class ErrorsFound {
 
     public long getUserCount() { return errorsFound.size(); }
 
-    public void makeError(long user, LocalDateTime transactionTime, String message, boolean isFraud) {
+    public void makeError(ErrorBase error) {
+        long user = error.getUserId();
+
         if (!errorsFound.containsKey(user)) {
             synchronized (this) {
                 if (!errorsFound.containsKey(user)) {
@@ -52,13 +38,17 @@ public class ErrorsFound {
                 }
             }
         }
-        if (!message.isBlank() || isFraud) {
-            // ArrayList is unsynchronized
-            synchronized (this) {
-                List<ErrorBase> userErrors = errorsFound.get(user);
-                userErrors.add(new ErrorBase(user, transactionTime, message, isFraud));
-            }
+
+        // ArrayList is unsynchronized
+        synchronized (this) {
+            List<ErrorBase> userErrors = errorsFound.get(user);
+            userErrors.add(error);
+            
         }
+    }
+
+    public void makeErrors(Stream<ErrorBase> errors) {
+        errors.forEach(n -> makeError(n));
     }
 
     // Clean up after writing
