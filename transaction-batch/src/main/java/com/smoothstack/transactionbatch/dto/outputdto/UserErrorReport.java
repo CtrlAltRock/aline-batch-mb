@@ -1,4 +1,4 @@
-package com.smoothstack.transactionbatch.outputdto;
+package com.smoothstack.transactionbatch.dto.outputdto;
 
 import javax.xml.bind.annotation.XmlRootElement;
 

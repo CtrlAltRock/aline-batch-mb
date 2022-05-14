@@ -54,7 +54,7 @@ public class MerchantsWriter implements ItemWriter<TransactRead> {
 
         toWrite.addAll(merchants.stream().map(n -> xStream.toXML(n)).collect(Collectors.toList()));
 
-        toWrite.add("</Merchantss>");
+        toWrite.add("</Merchants>");
 
         Path path = Paths.get(
             basePath, 

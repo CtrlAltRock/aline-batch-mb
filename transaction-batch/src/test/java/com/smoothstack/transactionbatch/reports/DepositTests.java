@@ -104,7 +104,7 @@ public class DepositTests {
         transactions.stream().forEach(n -> {
             BigDecimal amount = n.getAmount();
             if (amount.compareTo(BigDecimal.ZERO) == -1) {
-                depo.makeDeposit(new DepositBase(n.getUser(), amount));
+                depo.makeDeposit(new DepositBase(n.getUser(), amount.abs()));
             }
         });
 

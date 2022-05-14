@@ -9,8 +9,8 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import com.smoothstack.transactionbatch.dto.outputdto.YearBy;
 import com.smoothstack.transactionbatch.model.ErrorBase;
-import com.smoothstack.transactionbatch.outputdto.YearBy;
 import com.smoothstack.transactionbatch.report.ReportsContainer;
 import com.thoughtworks.xstream.XStream;
 
@@ -44,7 +44,8 @@ public class FraudByYear {
             .map((Map.Entry<Integer, Integer> n) -> {
                 String percent = String.format(
                     "%s%%",
-                    BigDecimal.valueOf(n.getValue()).divide(totalFrauds, 6, RoundingMode.HALF_UP)
+                    BigDecimal.valueOf(n.getValue())
+                    .divide(totalFrauds, 6, RoundingMode.HALF_UP)
                     .movePointRight(2)
                     .toPlainString()
                 );

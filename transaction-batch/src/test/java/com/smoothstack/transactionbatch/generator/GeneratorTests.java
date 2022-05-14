@@ -22,14 +22,6 @@ public class GeneratorTests {
         Optional<UserBase> testUser = userGenerator.generateUser(1);
 
         assertTrue(testUser.isPresent());
-
-        UserBase user = testUser.get();
-
-        assertEquals(1L, user.getId());
-        assertNotNull(user.getFirstName());
-        assertNotNull(user.getMiddleName());
-        assertNotNull(user.getDateOfBirth());
-        assertNotNull(user.getPhone());
     }
 
     @Test
@@ -37,13 +29,6 @@ public class GeneratorTests {
         Optional<CardBase> testCard = cardGenerator.generateCard(1, 2);
 
         assertTrue(testCard.isPresent());
-
-        CardBase card = testCard.get();
-
-        assertEquals(1L, card.getId());
-        assertEquals(1L, card.getUser());
-        assertNotNull(card.getCardNumber());
-        assertEquals(16, card.getCardNumber().length());
     }
 
     @Test
@@ -52,13 +37,6 @@ public class GeneratorTests {
         Optional<MerchantBase> testMerch = merchantGenerator.generateMerchant(mer);
 
         assertTrue(testMerch.isPresent());
-
-        MerchantBase merch = testMerch.get();
-
-        assertEquals(1L, merch.getId());
-        assertNotNull(merch.getName());
-        assertEquals("Chicago", merch.getCity());
-        assertEquals("IL", merch.getState());
     }
 
     @Test
@@ -66,10 +44,5 @@ public class GeneratorTests {
         Optional<StateBase> testState = stateGenerator.getState("IL");
 
         assertTrue(testState.isPresent());
-
-        StateBase state = testState.get();
-
-        assertEquals("Illinois", state.getName());
-        assertEquals("Springfield", state.getCapital());
     }
 }

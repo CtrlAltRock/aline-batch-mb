@@ -1,15 +1,14 @@
-package com.smoothstack.transactionbatch.outputdto;
+package com.smoothstack.transactionbatch.dto.outputdto;
 
 import javax.xml.bind.annotation.XmlRootElement;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
-@AllArgsConstructor
 @Getter
+@AllArgsConstructor
 @XmlRootElement
-public class YearBy {
+public class ReportBase {
     private String title;
-    private int year;
-    private String percentage;
+    private String report;
 }

@@ -14,6 +14,7 @@ import com.smoothstack.transactionbatch.writer.reports.DepositWriter;
 import com.smoothstack.transactionbatch.writer.reports.ErrorReporter;
 import com.smoothstack.transactionbatch.writer.reports.LocationsWriter;
 import com.smoothstack.transactionbatch.writer.reports.MerchantReporter;
+import com.smoothstack.transactionbatch.writer.reports.RecurringTransactions;
 
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
@@ -83,6 +84,7 @@ public class CompositeBatch {
             writers.add(new ErrorReporter());
             writers.add(new MerchantReporter());
             writers.add(new LocationsWriter());
+            writers.add(new RecurringTransactions());
         }
 
         writer.setDelegates(writers);
@@ -103,7 +105,7 @@ public class CompositeBatch {
     @Bean
     public Step compositeStep() {
         return steps.get("Composite Step")
-            .<TransactRead, TransactRead>chunk(20)
+            .<TransactRead, TransactRead>chunk(5000)
             .reader(transactionReader( null ))
             .writer(compositeItemWriter(null, null))
             .allowStartIfComplete(true)
