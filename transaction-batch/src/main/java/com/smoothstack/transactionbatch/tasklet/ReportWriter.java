@@ -40,7 +40,7 @@ public class ReportWriter implements Tasklet {
 
             deposits.add("</Deposits>");
 
-            fileWriter("output/reports/Deposits.xml", deposits);
+            fileWriter(basePath + "/output/reports/Deposits.xml", deposits);
 
             List<String> reports = new ArrayList<>();
 
@@ -62,7 +62,7 @@ public class ReportWriter implements Tasklet {
 
             reports.add("</Reports>");
 
-            fileWriter("output/reports/MainReports.xml", reports);
+            fileWriter(basePath + "/output/reports/MainReports.xml", reports);
             
         } finally {
             reportsContainer.clearCache();
@@ -71,9 +71,9 @@ public class ReportWriter implements Tasklet {
         return RepeatStatus.FINISHED;
     }
 
-    private void fileWriter(String filePath, List<String> toWrite) throws IOException {
+    public static void fileWriter(String filePath, List<String> toWrite) throws IOException {
         Files.write(
-                Paths.get(this.basePath, filePath),
+                Paths.get(filePath),
                 toWrite,
                 new OpenOption[]{StandardOpenOption.CREATE, StandardOpenOption.WRITE, StandardOpenOption.TRUNCATE_EXISTING}
             );

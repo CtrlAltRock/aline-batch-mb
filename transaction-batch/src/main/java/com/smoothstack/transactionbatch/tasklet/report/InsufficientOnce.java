@@ -24,7 +24,7 @@ public class InsufficientOnce {
         return xStream.toXML(report);        
     }
 
-    private static UserErrorReport generateReports(Stream<ErrorBase> errors, BigDecimal userCount) {
+    public static UserErrorReport generateReports(Stream<ErrorBase> errors, BigDecimal userCount) {
         HashSet<Long> users = new HashSet<>();
         errors.filter(n -> (n.getErrorMessage().equals("Insufficient Balance"))).forEach(n -> users.add(n.getUserId()));
 
