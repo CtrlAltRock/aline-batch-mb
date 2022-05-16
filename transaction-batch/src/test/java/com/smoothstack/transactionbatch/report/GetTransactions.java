@@ -65,7 +65,9 @@ public class GetTransactions {
         String state = fields[10];
         String zip = fields[11];
         int mcc = Integer.parseInt(fields[12]);
-        String errors = fields[13];
+        String errors;
+        
+        if (!fields[13].isBlank()) errors = fields[13].substring(1, fields[13].length()); else errors = "";
 
         boolean isFraud = false;
 

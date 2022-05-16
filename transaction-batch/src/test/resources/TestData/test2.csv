@@ -34,7 +34,7 @@ User,Card,Year,Month,Day,Time,Amount,Use Chip,Merchant Name,Merchant City,Mercha
 0,0,2002,9,11,13:17,$-99.00,Swipe Transaction,2027553650310142703,Mira Loma,CA,91752.0,5541,,No
 0,0,2002,9,11,13:23,$99.00,Swipe Transaction,2027553650310142703,Mira Loma,CA,91752.0,5541,,No
 0,0,2002,9,11,19:30,$80.18,Swipe Transaction,-1605794445852049456,La Verne,CA,91750.0,5812,,No
-0,0,2002,9,12,06:21,$122.10,Swipe Transaction,4060646732831064559,La Verne,CA,91750.0,5411,"Insufficient Balance,",No
+2,0,2002,9,12,06:21,$122.10,Swipe Transaction,4060646732831064559,La Verne,CA,91750.0,5411,"Insufficient Balance,",No
 0,0,2002,9,12,06:26,$92.76,Swipe Transaction,4060646732831064559,La Verne,CA,91750.0,5411,,No
 0,0,2002,9,12,06:50,$52.52,Swipe Transaction,4060646732831064559,La Verne,CA,91750.0,5411,,No
 0,0,2002,9,12,11:43,$1.13,Swipe Transaction,6666504894937430109,La Verne,CA,91750.0,5499,,No

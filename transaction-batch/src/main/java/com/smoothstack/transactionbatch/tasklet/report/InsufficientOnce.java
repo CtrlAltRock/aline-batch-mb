@@ -26,7 +26,7 @@ public class InsufficientOnce {
 
     public static UserErrorReport generateReports(Stream<ErrorBase> errors, BigDecimal userCount) {
         HashSet<Long> users = new HashSet<>();
-        errors.filter(n -> (n.getErrorMessage().equals("Insufficient Balance"))).forEach(n -> users.add(n.getUserId()));
+        errors.filter(n -> (n.getErrorMessage().matches("Insufficient Balance"))).forEach(n -> users.add(n.getUserId()));
 
         BigDecimal perce = BigDecimal.valueOf(users.size())
             .divide(userCount, 6, RoundingMode.HALF_UP)

@@ -25,7 +25,7 @@ public class FraudByYear {
     }
 
     // Return stream to save collecting until we convert to xml
-    private static Stream<YearBy> generateReports(Stream<ErrorBase> errors) {
+    public static Stream<YearBy> generateReports(Stream<ErrorBase> errors) {
         final AbstractMap<Integer, Integer> fraudByYear = new HashMap<>();
 
         // Increment for each fraud report per year

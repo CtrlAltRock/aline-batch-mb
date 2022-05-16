@@ -56,7 +56,7 @@ public class ErrorTests {
 
         ErrorBase testError = error.get(0);
 
-        assertEquals("\"Technical Glitch", testError.getErrorMessage());
+        assertEquals("Technical Glitch", testError.getErrorMessage());
     }
 }
 

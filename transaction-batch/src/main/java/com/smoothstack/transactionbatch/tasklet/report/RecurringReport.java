@@ -21,7 +21,7 @@ public class RecurringReport {
             .collect(Collectors.toList());
     }
 
-    private static Stream<Recurrences> generateReports(AbstractMap<String, AtomicLong> transacts) {
+    public static Stream<Recurrences> generateReports(AbstractMap<String, AtomicLong> transacts) {
         return transacts.entrySet().parallelStream()
             .sorted((n1, n2) -> Long.compare(n2.getValue().get(), n1.getValue().get()))
             .limit(5)
