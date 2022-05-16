@@ -21,7 +21,7 @@ public class ZipReporter {
     }
 
     // Return the top 5 zip codes by transaction amount
-    private static Stream<LocationReport> generateReports(AbstractMap<Integer, AtomicLong> transactions) {
+    public static Stream<LocationReport> generateReports(AbstractMap<Integer, AtomicLong> transactions) {
         return transactions.entrySet().stream()
         .sorted((n1, n2) -> Long.compare(n2.getValue().get(), n1.getValue().get()))
         .limit(5)

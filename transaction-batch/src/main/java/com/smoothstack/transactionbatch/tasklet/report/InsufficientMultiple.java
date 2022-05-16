@@ -23,9 +23,9 @@ public class InsufficientMultiple {
         return xStream.toXML(report);       
     }
 
-    private static UserErrorReport generateReports(Stream<ErrorBase> errors, BigDecimal userCount) {
+    public static UserErrorReport generateReports(Stream<ErrorBase> errors, BigDecimal userCount) {
         HashMap<Long, Boolean> users = new HashMap<>();
-        errors.filter(n -> (n.getErrorMessage().equals("Insufficient Balance")))
+        errors.filter(n -> (n.getErrorMessage().matches("Insufficient Balance")))
             .forEach(n -> {
                 if (users.containsKey(n.getUserId())) {
                     users.put(n.getUserId(), true);

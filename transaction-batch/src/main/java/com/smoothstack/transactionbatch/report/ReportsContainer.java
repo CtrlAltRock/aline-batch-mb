@@ -57,7 +57,6 @@ public class ReportsContainer {
 
     public void makeErrors(List<? extends TransactRead> items) {
         Stream<ErrorBase> errors = items.parallelStream()
-            .filter(n -> (!n.getErrors().isBlank() || n.getFraud()))
             .map(n -> new ErrorBase(n.getUser(), n.getDate(), n.getErrors(), n.getFraud()));
 
         errorsFound.makeErrors(errors);

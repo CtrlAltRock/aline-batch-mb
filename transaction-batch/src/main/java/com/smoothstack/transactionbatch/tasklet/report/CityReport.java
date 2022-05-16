@@ -19,7 +19,7 @@ public class CityReport {
             .collect(Collectors.toList());
     }
     
-    private static Stream<LocationReport> generateReports(AbstractMap<String, AtomicLong> transactions) {
+    public static Stream<LocationReport> generateReports(AbstractMap<String, AtomicLong> transactions) {
         return transactions.entrySet().stream()
         .sorted((n1, n2) -> Long.compare(n2.getValue().get(), n1.getValue().get()))
         .limit(5)

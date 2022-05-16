@@ -5,6 +5,7 @@ import com.smoothstack.transactionbatch.config.CompositeBatch;
 import com.smoothstack.transactionbatch.generator.CardGenerator;
 import com.smoothstack.transactionbatch.generator.MerchantGenerator;
 import com.smoothstack.transactionbatch.generator.UserGenerator;
+import com.smoothstack.transactionbatch.report.ReportsContainer;
 
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Test;
@@ -25,6 +26,7 @@ import org.springframework.test.context.ContextConfiguration;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 
+import java.io.File;
 import java.time.Instant;
 import java.util.Date;
 
@@ -42,6 +44,7 @@ class TransactionbatchApplicationTests {
 
 	@AfterAll
 	public void cleanUp() {
+		ReportsContainer.getInstance().clearCache();
 		UserGenerator.getInstance().clearMap();
 		CardGenerator.getInstance().clearMap();
 		MerchantGenerator.getInstance().clearMap();
@@ -51,7 +54,7 @@ class TransactionbatchApplicationTests {
 	private JobParameters jobParameters() {
 		return new JobParametersBuilder()
 			.addDate("time", Date.from(Instant.now()))
-			.addString("inputFile", "/home/artixulate/vscode/coffee/aline-financial/transactionbatch/transaction-batch/src/test/resources/TestData/test2.csv")
+			.addString("inputFile", new File("").getAbsolutePath() + "/src/test/resources/TestData/test2.csv")
 			.addString("enrich", "true")
 			.addString("analyze", "true")
 			.toJobParameters();
