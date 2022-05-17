@@ -6,9 +6,10 @@ import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Stream;
 
 import com.smoothstack.transactionbatch.dto.LocationDto;
+import com.smoothstack.transactionbatch.model.TransactRead;
 
 // Handle transactions by zip and by city
-public class LocationTransaction {
+public class LocationTransaction implements ReportUtils {
     private final AbstractMap<Integer, AtomicLong> transactByZip = new ConcurrentHashMap<>();
 
     private final AbstractMap<String, AtomicLong> transactByCity = new ConcurrentHashMap<>();
@@ -42,14 +43,24 @@ public class LocationTransaction {
         transactByCity.get(city).incrementAndGet();
     }
 
-    public void makeTransactions(Stream<LocationDto> locations) {
-        locations.forEach(n -> {
+    @Override
+    public void addItems(Stream<? extends TransactRead> items) {
+        // First filter out online transactions
+        items.filter(n -> (!n.getZip().isBlank() && !n.getCity().isBlank()))
+        // Get desired information from remaining objects and put into POJO
+        .map(n -> {
+            String oldZip = n.getZip();
+            int zip = Integer.parseInt(oldZip.substring(0, oldZip.length() - 2));
+            return new LocationDto(zip, n.getCity());
+        })
+        .forEach(n -> {
             makeZipTransact(n.getZip());
             makeCityTransact(n.getCity());
         });
-    }
+    } 
 
-    public void clearMaps() {
+    @Override
+    public void clearCache() {
         transactByCity.clear();
         transactByZip.clear();
     }

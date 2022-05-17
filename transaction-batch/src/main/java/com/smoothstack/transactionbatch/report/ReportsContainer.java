@@ -1,14 +1,12 @@
 package com.smoothstack.transactionbatch.report;
 
-import java.math.BigDecimal;
 import java.util.AbstractMap;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Stream;
 
-import com.smoothstack.transactionbatch.dto.LocationDto;
-import com.smoothstack.transactionbatch.dto.RecurringDto;
 import com.smoothstack.transactionbatch.model.DepositBase;
 import com.smoothstack.transactionbatch.model.ErrorBase;
 import com.smoothstack.transactionbatch.model.TransactRead;
@@ -25,7 +23,18 @@ public class ReportsContainer {
 
     private LocationTransaction loca = new LocationTransaction();
 
-    private ReportsContainer() { }
+    private TransactionType transactionType = new TransactionType();
+
+    // Report utils interface to clean up this class
+    private final List<ReportUtils> reporters = new ArrayList<>();
+
+    private ReportsContainer() { 
+        reporters.add(merchantInstance);
+        reporters.add(errorsFound);
+        reporters.add(depo);
+        reporters.add(loca);
+        reporters.add(transactionType);
+    }
 
     public static ReportsContainer getInstance() {
         if (INSTANCE == null) {
@@ -38,16 +47,11 @@ public class ReportsContainer {
         return INSTANCE;
     }
 
-    public Collection<DepositBase> getDeposits() { return depo.getDeposits(); }
-
-    public void makeDeposits(List<? extends TransactRead> items) {
-        depo.makeDeposits(items.parallelStream()
-            .filter(n -> n.getAmount().compareTo(BigDecimal.ZERO) == -1)
-            .map(n -> {
-                return new DepositBase(n.getUser(), n.getAmount().abs());
-            })
-        );
+    public void addItems(List<? extends TransactRead> items) {
+        reporters.forEach(n -> n.addItems(items.parallelStream()));
     }
+
+    public Collection<DepositBase> getDeposits() { return depo.getDeposits(); }
 
     public Stream<ErrorBase> getErrors() { return errorsFound.getErrors(); }
 
@@ -55,52 +59,20 @@ public class ReportsContainer {
 
     public long getUserCount() { return errorsFound.getUserCount(); }
 
-    public void makeErrors(List<? extends TransactRead> items) {
-        Stream<ErrorBase> errors = items.parallelStream()
-            .map(n -> new ErrorBase(n.getUser(), n.getDate(), n.getErrors(), n.getFraud()));
-
-        errorsFound.makeErrors(errors);
-    }
-
-    public void addMerchants(List<? extends TransactRead> merchants) { 
-        Stream<Long> merch = merchants.stream()
-            .map(n -> n.getMerchant());
-        
-        merchantInstance.addMerchants(merch);
-    }
-
     public int getNumOfMerchants() { return merchantInstance.getNumOfMerchants(); }
 
     public AbstractMap<Integer, AtomicLong> getZipTransacts() { return loca.getZipTransacts(); }
 
     public AbstractMap<String, AtomicLong> getCityTransacts() { return loca.getCityTransacts(); }
 
-    public void makeLocationTransacts(List<? extends TransactRead> items) {
-        Stream<LocationDto> locations = items.parallelStream()
-        // Filter out online transactions 
-        .filter(n -> (!n.getZip().isBlank() && !n.getCity().isBlank()))
-        .map(n -> {
-            String oldZip = n.getZip();
-            int zip = Integer.parseInt(oldZip.substring(0, oldZip.length() - 2));
-            return new LocationDto(zip, n.getCity());
-        });
-
-        loca.makeTransactions(locations);
+    // Get just the recurring merchant information from each merchant
+    public AbstractMap<String, AtomicLong> getRecurring() {
+        return merchantInstance.getTransactions();
     }
 
-    public AbstractMap<String, AtomicLong> getRecurring() { return merchantInstance.getTransactions(); }
-
-    public void makeRecurringTransacts(List<? extends TransactRead> items) {
-        Stream<RecurringDto> transacts = items.parallelStream()
-            .map(n -> new RecurringDto(n.getMerchant(), n.getAmount(), n.getUser(), n.getCard()));
-
-        merchantInstance.addTransactions(transacts);
-    }
+    public int getNumberOfTransactions() { return transactionType.getNumberOfTransactions(); }
 
     public void clearCache() {
-        errorsFound.clearMap();
-        merchantInstance.clear();
-        depo.clearMap();
-        loca.clearMaps();
+        reporters.forEach(n -> n.clearCache());
     }
 }

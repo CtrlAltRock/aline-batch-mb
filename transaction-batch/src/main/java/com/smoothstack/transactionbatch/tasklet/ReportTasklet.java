@@ -24,7 +24,7 @@ import org.springframework.batch.core.scope.context.ChunkContext;
 import org.springframework.batch.core.step.tasklet.Tasklet;
 import org.springframework.batch.repeat.RepeatStatus;
 
-public class ReportWriter implements Tasklet {
+public class ReportTasklet implements Tasklet {
     private final String basePath = new File("").getAbsolutePath();
 
     private final ReportsContainer reportsContainer = ReportsContainer.getInstance();

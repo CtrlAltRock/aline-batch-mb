@@ -7,8 +7,9 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Stream;
 
 import com.smoothstack.transactionbatch.model.ErrorBase;
+import com.smoothstack.transactionbatch.model.TransactRead;
 
-public class ErrorsFound {
+public class ErrorsFound implements ReportUtils {
     // Map user id's to errors that user has
     private AbstractMap<Long, List<ErrorBase>> errorsFound = new ConcurrentHashMap<>();
 
@@ -47,12 +48,15 @@ public class ErrorsFound {
         }
     }
 
-    public void makeErrors(Stream<ErrorBase> errors) {
-        errors.forEach(n -> makeError(n));
+    @Override
+    public void addItems(Stream<? extends TransactRead> items) {
+        items.map(n -> new ErrorBase(n.getUser(), n.getDate(), n.getErrors(), n.getFraud()))
+        .forEach(this::makeError);
     }
 
-    // Clean up after writing
-    public void clearMap() {
+    
+    @Override
+    public void clearCache() {
         errorsFound.clear();
     }
 }

@@ -6,15 +6,11 @@ import java.util.List;
 import com.smoothstack.transactionbatch.mapper.CustomFieldSetMapper;
 import com.smoothstack.transactionbatch.model.TransactRead;
 import com.smoothstack.transactionbatch.tasklet.NullTasklet;
-import com.smoothstack.transactionbatch.tasklet.ReportWriter;
+import com.smoothstack.transactionbatch.tasklet.ReportTasklet;
 import com.smoothstack.transactionbatch.writer.enrich.CardsWriter;
 import com.smoothstack.transactionbatch.writer.enrich.MerchantsWriter;
 import com.smoothstack.transactionbatch.writer.enrich.UsersWriter;
-import com.smoothstack.transactionbatch.writer.reports.DepositWriter;
-import com.smoothstack.transactionbatch.writer.reports.ErrorReporter;
-import com.smoothstack.transactionbatch.writer.reports.LocationsWriter;
-import com.smoothstack.transactionbatch.writer.reports.MerchantReporter;
-import com.smoothstack.transactionbatch.writer.reports.RecurringTransactions;
+import com.smoothstack.transactionbatch.writer.reports.ReportWriter;
 
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
@@ -80,11 +76,7 @@ public class CompositeBatch {
         }
 
         if (analyze != null && !analyze.equals("false")) {
-            writers.add(new DepositWriter());
-            writers.add(new ErrorReporter());
-            writers.add(new MerchantReporter());
-            writers.add(new LocationsWriter());
-            writers.add(new RecurringTransactions());
+            writers.add(new ReportWriter());
         }
 
         writer.setDelegates(writers);
@@ -99,7 +91,7 @@ public class CompositeBatch {
     ) {
         if (analyze == null || analyze.equals("false")) return new NullTasklet();
 
-        return new ReportWriter();
+        return new ReportTasklet();
     }
 
     @Bean

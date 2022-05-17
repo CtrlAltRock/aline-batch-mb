@@ -3,7 +3,6 @@ package com.smoothstack.transactionbatch.report;
 import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import com.smoothstack.transactionbatch.model.ErrorBase;
 
@@ -25,11 +24,7 @@ public class ErrorTests {
         this.errors = new ErrorsFound();
 
         // Populate errors
-        Stream<ErrorBase> foundErrors = new GetTransactions().getTransactions()
-        .filter(n -> (!n.getErrors().isBlank() || n.getFraud()))
-        .map(n -> new ErrorBase(n.getUser(), n.getDate(), n.getErrors(), n.getFraud()));
-
-        errors.makeErrors(foundErrors);
+        errors.addItems(new GetTransactions().getTransactions());
     }
 
 

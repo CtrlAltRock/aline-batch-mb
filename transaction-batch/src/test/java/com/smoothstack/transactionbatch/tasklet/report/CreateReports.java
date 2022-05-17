@@ -14,10 +14,7 @@ public class CreateReports {
     private CreateReports() {
         List<TransactRead> transacts = new GetTransactions().getTransactions().toList();
 
-        reportsContainer.makeErrors(transacts);
-        reportsContainer.addMerchants(transacts);
-        reportsContainer.makeLocationTransacts(transacts);
-        reportsContainer.makeRecurringTransacts(transacts);
+        reportsContainer.addItems(transacts);
     }
 
     public static CreateReports getInstance() {
