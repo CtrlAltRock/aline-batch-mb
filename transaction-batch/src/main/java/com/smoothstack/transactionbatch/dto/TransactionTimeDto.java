@@ -12,6 +12,8 @@ public final class TransactionTimeDto implements Comparable<TransactionTimeDto>{
     private LocalDateTime transactionTime;
     private BigDecimal amount;
 
+
+    // Get transactions largest to smallest
     @Override
     public int compareTo(TransactionTimeDto other) {
         return other.getAmount().compareTo(this.amount);

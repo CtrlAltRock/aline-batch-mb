@@ -29,5 +29,7 @@ public class CreateReports {
         return INSTANCE;
     }
 
+    public void clearCache() { reportsContainer.clearCache(); }
+
     public ReportsContainer getReports() { return reportsContainer; }
 }

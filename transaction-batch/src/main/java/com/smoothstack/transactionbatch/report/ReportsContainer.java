@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Stream;
 
+import com.smoothstack.transactionbatch.dto.OnlineMonthlyDto;
 import com.smoothstack.transactionbatch.dto.RecurringDto;
 import com.smoothstack.transactionbatch.dto.TransactionTimeDto;
 import com.smoothstack.transactionbatch.model.DepositBase;
@@ -80,6 +81,8 @@ public class ReportsContainer {
     public int getNumberOfTransactions() { return transactionType.getNumberOfTransactions(); }
 
     public Collection<TransactionTimeDto> getTopTen() { return topTenTransaction.getTopTen(); }
+
+    public AbstractMap<OnlineMonthlyDto, AtomicLong> getMonthlyTransact() { return transactionType.getMonthlyTransact(); }
 
     public void clearCache() {
         reporters.forEach(n -> n.clearCache());

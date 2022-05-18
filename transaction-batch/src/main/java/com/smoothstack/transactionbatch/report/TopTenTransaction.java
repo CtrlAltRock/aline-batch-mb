@@ -1,10 +1,6 @@
 package com.smoothstack.transactionbatch.report;
 
-import java.math.BigDecimal;
-import java.time.LocalDateTime;
-import java.util.AbstractMap;
 import java.util.Collection;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -12,8 +8,6 @@ import com.smoothstack.transactionbatch.dto.TransactionTimeDto;
 import com.smoothstack.transactionbatch.model.TransactRead;
 
 public class TopTenTransaction implements ReportUtils {
-    // Here for when we add other stories
-    //private AbstractMap<LocalDateTime, BigDecimal> transactions = new ConcurrentHashMap<>();
 
     private Collection<TransactionTimeDto> topTenTransactions = null;
 
@@ -35,6 +29,6 @@ public class TopTenTransaction implements ReportUtils {
 
     @Override
     public void clearCache() {
-
+        topTenTransactions = null;
     }
 }

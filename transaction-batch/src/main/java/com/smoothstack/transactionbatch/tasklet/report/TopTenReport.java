@@ -15,7 +15,7 @@ public class TopTenReport {
     public static Collection<String> getReports(ReportsContainer reportsContainer) {
         XStream xStream = new XStream();
 
-        xStream.alias("Top Ten Transactions", ReportBase.class);
+        xStream.alias("TopTenTransactions", ReportBase.class);
 
         return generateReport(reportsContainer.getTopTen())
             .map(n -> xStream.toXML(n))
