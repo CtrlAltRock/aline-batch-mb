@@ -6,6 +6,7 @@ import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import com.smoothstack.transactionbatch.dto.RecurringDto;
 import com.smoothstack.transactionbatch.dto.outputdto.Recurrences;
 import com.smoothstack.transactionbatch.report.ReportsContainer;
 import com.thoughtworks.xstream.XStream;
@@ -21,13 +22,19 @@ public class RecurringReport {
             .collect(Collectors.toList());
     }
 
-    public static Stream<Recurrences> generateReports(AbstractMap<String, AtomicLong> transacts) {
+    public static Stream<Recurrences> generateReports(AbstractMap<RecurringDto, AtomicLong> transacts) {
         return transacts.entrySet().parallelStream()
             .sorted((n1, n2) -> Long.compare(n2.getValue().get(), n1.getValue().get()))
             .limit(5)
             .map(n -> {
-                String[] information = n.getKey().split(" ");
-                return new Recurrences(information[0], "$" + information[1], information[2], information[3], n.getValue().get());
+                RecurringDto recur = n.getKey();
+                return new Recurrences(
+                    Long.toString(recur.getMerchantId()), 
+                    "$" + recur.getAmount(), 
+                    Long.toString(recur.getUserId()), 
+                    Long.toString(recur.getCardId()), 
+                    n.getValue().get()
+                );
             });
     }
 }

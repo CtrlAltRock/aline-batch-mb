@@ -37,6 +37,6 @@ public class MerchantTests {
         assertEquals("0", recurrence.getCardId());
         assertEquals("-4282466774399734331", recurrence.getMerchantId());
         assertEquals("0", recurrence.getUserId());
-        assertEquals(20, recurrence.getOccurences());
+        assertEquals(10, recurrence.getOccurences());
     }
 }

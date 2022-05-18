@@ -44,7 +44,7 @@ public class BatchController {
 
     private JobParameters parameterBuilder(GeneratorRequest req) {
         JobParametersBuilder jobParameters = new JobParametersBuilder()
-            .addString("inputFile", "input/test2.csv").addDate("time", Date.from(Instant.now()));
+            .addString("inputFile", "input/card_transaction.v1.csv").addDate("time", Date.from(Instant.now()));
 
         // Allow to not kick off data generation based on form passed in post data
         if (req.getDataEnrich() != null) jobParameters.addString("enrich", req.getDataEnrich().toString());

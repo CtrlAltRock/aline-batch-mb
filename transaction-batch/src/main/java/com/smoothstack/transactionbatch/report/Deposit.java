@@ -1,13 +1,15 @@
 package com.smoothstack.transactionbatch.report;
 
+import java.math.BigDecimal;
 import java.util.AbstractMap;
 import java.util.Collection;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Stream;
 
 import com.smoothstack.transactionbatch.model.DepositBase;
+import com.smoothstack.transactionbatch.model.TransactRead;
 
-public class Deposit {
+public class Deposit implements ReportUtils {
     private AbstractMap<Long, DepositBase> accountBalance = new ConcurrentHashMap<>();
 
     public Collection<DepositBase> getDeposits() { return accountBalance.values(); }
@@ -32,12 +34,16 @@ public class Deposit {
         }       
     }
 
-    public void makeDeposits(Stream<DepositBase> deposits) {
-        deposits.forEach(n -> makeDeposit(n));
+    @Override
+    public void addItems(Stream<? extends TransactRead> items) {
+        items.filter(n -> n.getAmount().compareTo(BigDecimal.ZERO) == -1)
+        .map(n -> new DepositBase(n.getUser(), n.getAmount().abs()))
+        .forEach(this::makeDeposit);;
     }
 
-    // Clean up after writing
-    public void clearMap() {
+
+    @Override
+    public void clearCache() {
         accountBalance.clear();
     }
 
