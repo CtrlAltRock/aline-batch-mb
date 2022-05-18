@@ -16,6 +16,8 @@ import com.smoothstack.transactionbatch.tasklet.report.FraudByYear;
 import com.smoothstack.transactionbatch.tasklet.report.InsufficientMultiple;
 import com.smoothstack.transactionbatch.tasklet.report.InsufficientOnce;
 import com.smoothstack.transactionbatch.tasklet.report.RecurringReport;
+import com.smoothstack.transactionbatch.tasklet.report.TopTenReport;
+import com.smoothstack.transactionbatch.tasklet.report.TransactionTypeReport;
 import com.smoothstack.transactionbatch.tasklet.report.UniqueMerchantsReport;
 import com.smoothstack.transactionbatch.tasklet.report.ZipReporter;
 
@@ -45,6 +47,10 @@ public class ReportTasklet implements Tasklet {
             List<String> reports = new ArrayList<>();
 
             reports.add("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<Reports>");
+
+            reports.addAll(TopTenReport.getReports(reportsContainer));
+
+            reports.addAll(TransactionTypeReport.getReport(reportsContainer));
 
             reports.addAll(RecurringReport.getReports(reportsContainer));
 

@@ -7,6 +7,8 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Stream;
 
+import com.smoothstack.transactionbatch.dto.RecurringDto;
+import com.smoothstack.transactionbatch.dto.TransactionTimeDto;
 import com.smoothstack.transactionbatch.model.DepositBase;
 import com.smoothstack.transactionbatch.model.ErrorBase;
 import com.smoothstack.transactionbatch.model.TransactRead;
@@ -25,6 +27,8 @@ public class ReportsContainer {
 
     private TransactionType transactionType = new TransactionType();
 
+    private TopTenTransaction topTenTransaction = new TopTenTransaction();
+
     // Report utils interface to clean up this class
     private final List<ReportUtils> reporters = new ArrayList<>();
 
@@ -34,6 +38,7 @@ public class ReportsContainer {
         reporters.add(depo);
         reporters.add(loca);
         reporters.add(transactionType);
+        reporters.add(topTenTransaction);
     }
 
     public static ReportsContainer getInstance() {
@@ -66,11 +71,15 @@ public class ReportsContainer {
     public AbstractMap<String, AtomicLong> getCityTransacts() { return loca.getCityTransacts(); }
 
     // Get just the recurring merchant information from each merchant
-    public AbstractMap<String, AtomicLong> getRecurring() {
+    public AbstractMap<RecurringDto, AtomicLong> getRecurring() {
         return merchantInstance.getTransactions();
     }
 
+    public AbstractMap<String, AtomicLong> getTransactionTypes() { return transactionType.getTransactionTypes(); }
+
     public int getNumberOfTransactions() { return transactionType.getNumberOfTransactions(); }
+
+    public Collection<TransactionTimeDto> getTopTen() { return topTenTransaction.getTopTen(); }
 
     public void clearCache() {
         reporters.forEach(n -> n.clearCache());

@@ -11,10 +11,10 @@ import com.smoothstack.transactionbatch.model.TransactRead;
 public class Merchants implements ReportUtils {
 
     // String concatenates information of amount with merchant
-    private AbstractMap<Long, AbstractMap<String, AtomicLong>> recurringTransactions = new ConcurrentHashMap<>();
+    private AbstractMap<Long, AbstractMap<RecurringDto, AtomicLong>> recurringTransactions = new ConcurrentHashMap<>();
 
-    public AbstractMap<String, AtomicLong> getTransactions() { 
-        AbstractMap<String, AtomicLong> recurrences = new ConcurrentHashMap<>();
+    public AbstractMap<RecurringDto, AtomicLong> getTransactions() { 
+        AbstractMap<RecurringDto, AtomicLong> recurrences = new ConcurrentHashMap<>();
 
         recurringTransactions.values()
         .forEach(n -> {
@@ -24,7 +24,7 @@ public class Merchants implements ReportUtils {
         return recurrences;
      }
     
-    public void addTransaction(long merchant, String info) {
+    public void addTransaction(long merchant, RecurringDto info) {
         // Add the Merchant
         if (!recurringTransactions.containsKey(merchant)) {
             synchronized (this.recurringTransactions) {
@@ -34,7 +34,7 @@ public class Merchants implements ReportUtils {
             }
         }
 
-        AbstractMap<String, AtomicLong> merch = recurringTransactions.get(merchant);
+        AbstractMap<RecurringDto, AtomicLong> merch = recurringTransactions.get(merchant);
 
         // Start recurring transactions for merchants
         if (!merch.containsKey(info)) {
@@ -56,7 +56,7 @@ public class Merchants implements ReportUtils {
     public void addItems(Stream<? extends TransactRead> items) {
         items.forEach(n -> {
             RecurringDto recur = new RecurringDto(n.getMerchant(), n.getAmount(), n.getUser(), n.getCard());
-            addTransaction(n.getMerchant(), recur.toString());
+            addTransaction(n.getMerchant(), recur);
         });
     }
 

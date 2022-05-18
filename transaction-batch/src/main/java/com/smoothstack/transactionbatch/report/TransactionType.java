@@ -1,24 +1,29 @@
 package com.smoothstack.transactionbatch.report;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.AbstractMap;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Stream;
 
 import com.smoothstack.transactionbatch.model.TransactRead;
 
 public class TransactionType implements ReportUtils {
-    private Set<String> transactionTypes = new HashSet<>();
+    private AbstractMap<String, AtomicLong> transactionTypes = new ConcurrentHashMap<>();
 
     public int getNumberOfTransactions() { return transactionTypes.size(); }
 
+    public AbstractMap<String, AtomicLong> getTransactionTypes() { return transactionTypes; }
+
     public void addTransactionType(String transactionType) {
-        if (!transactionTypes.contains(transactionType)) {
+        if (!transactionTypes.containsKey(transactionType)) {
             synchronized (this.transactionTypes) {
-                if (!transactionTypes.contains(transactionType)) {
-                    transactionTypes.add(transactionType);
+                if (!transactionTypes.containsKey(transactionType)) {
+                    transactionTypes.put(transactionType, new AtomicLong());
                 }
             }
         }
+
+        transactionTypes.get(transactionType).incrementAndGet();
     }
     
     @Override
