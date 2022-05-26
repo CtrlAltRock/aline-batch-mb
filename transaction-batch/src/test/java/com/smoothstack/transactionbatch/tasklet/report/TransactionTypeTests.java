@@ -7,7 +7,6 @@ import java.util.List;
 import com.smoothstack.transactionbatch.dto.outputdto.ReportBase;
 import com.smoothstack.transactionbatch.report.ReportsContainer;
 
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 

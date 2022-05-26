@@ -15,9 +15,15 @@ public class TopTenTransaction implements ReportUtils {
         
     public synchronized void aggregateTopTen(Stream<TransactionTimeDto> items) {
         if (topTenTransactions == null) {
-            topTenTransactions = items.sorted().limit(10).collect(Collectors.toList());
+            topTenTransactions = items
+                .sorted()
+                .limit(10)
+                .collect(Collectors.toList());
         } else {
-            topTenTransactions = Stream.concat(items, topTenTransactions.stream()).sorted().limit(10).collect(Collectors.toList());
+            topTenTransactions = Stream.concat(items, topTenTransactions.stream())
+                .sorted()
+                .limit(10)
+                .collect(Collectors.toList());
         }
 
     }

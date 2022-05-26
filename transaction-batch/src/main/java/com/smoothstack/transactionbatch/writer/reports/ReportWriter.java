@@ -7,6 +7,9 @@ import com.smoothstack.transactionbatch.report.ReportsContainer;
 
 import org.springframework.batch.item.ItemWriter;
 
+import io.micrometer.core.annotation.Timed;
+
+@Timed
 public class ReportWriter implements ItemWriter<TransactRead> {
     private final ReportsContainer reportsContainer = ReportsContainer.getInstance();
     

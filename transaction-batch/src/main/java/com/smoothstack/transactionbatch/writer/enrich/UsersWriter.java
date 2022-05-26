@@ -20,6 +20,9 @@ import com.thoughtworks.xstream.XStream;
 
 import org.springframework.batch.item.ItemWriter;
 
+import io.micrometer.core.annotation.Timed;
+
+@Timed
 public class UsersWriter implements ItemWriter<TransactRead> {
     private final UserGenerator userGenerator = UserGenerator.getInstance();
 

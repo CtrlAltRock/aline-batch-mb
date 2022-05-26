@@ -21,6 +21,9 @@ import com.thoughtworks.xstream.XStream;
 
 import org.springframework.batch.item.ItemWriter;
 
+import io.micrometer.core.annotation.Timed;
+
+@Timed
 public class MerchantsWriter implements ItemWriter<TransactRead> {
     private final MerchantGenerator merchGenerator = MerchantGenerator.getInstance();
 

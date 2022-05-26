@@ -27,6 +27,9 @@ import org.springframework.batch.core.scope.context.ChunkContext;
 import org.springframework.batch.core.step.tasklet.Tasklet;
 import org.springframework.batch.repeat.RepeatStatus;
 
+import io.micrometer.core.annotation.Timed;
+
+@Timed
 public class ReportTasklet implements Tasklet {
     private final String basePath = new File("").getAbsolutePath();
 

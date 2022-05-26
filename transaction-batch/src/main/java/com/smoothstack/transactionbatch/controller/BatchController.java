@@ -29,6 +29,7 @@ public class BatchController {
     @Autowired
     private Job job;
 
+
     @PostMapping(path = "/load", consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
     public ResponseEntity<String> generateUsers(@RequestBody GeneratorRequest req) throws Exception {
         JobExecution exec = jobLauncher.run(job, parameterBuilder(req));
