@@ -27,7 +27,7 @@ public class TransactionTypeTests {
             .toList().get(0);
 
         assertEquals("Swipe Transaction", report.getTitle());
-        assertEquals("2862", report.getReport());
+        assertEquals("2863", report.getReport());
     }
 
     @Test

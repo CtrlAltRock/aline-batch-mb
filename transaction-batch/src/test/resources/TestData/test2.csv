@@ -2997,3 +2997,4 @@ User,Card,Year,Month,Day,Time,Amount,Use Chip,Merchant Name,Merchant City,Mercha
 0,0,2011,9,29,06:12,$117.66,Online Transaction,-7421093378627544099, ONLINE,,,5311,,No
 0,1,2011,9,30,06:52,$45.85,Swipe Transaction,-727612092139916043,Monterey Park,CA,91754.0,5411,,No
 1,0,2011,10,1,13:00,$14.77,Swipe Transaction,5363982839826799297,Florence,SC,29506.0,5812,,No
+0,0,2003,1,24,12:00,$227.90,Swipe Transaction,8099188931555596779,Florence,SC,29506.0,5812,,No
