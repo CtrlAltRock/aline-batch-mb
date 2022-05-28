@@ -4,6 +4,8 @@ import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Stream;
 
@@ -30,6 +32,8 @@ public class ReportsContainer {
 
     private TopTenTransaction topTenTransaction = new TopTenTransaction();
 
+    private MerchantByCity merchantByCity = new MerchantByCity();
+
     // Report utils interface to clean up this class
     private final List<ReportUtils> reporters = new ArrayList<>();
 
@@ -40,6 +44,7 @@ public class ReportsContainer {
         reporters.add(loca);
         reporters.add(transactionType);
         reporters.add(topTenTransaction);
+        reporters.add(merchantByCity);
     }
 
     public static ReportsContainer getInstance() {
@@ -83,6 +88,12 @@ public class ReportsContainer {
     public Collection<TransactionTimeDto> getTopTen() { return topTenTransaction.getTopTen(); }
 
     public AbstractMap<OnlineMonthlyDto, AtomicLong> getMonthlyTransact() { return transactionType.getMonthlyTransact(); }
+
+    public Stream<Map.Entry<String, Set<Long>>> getMerchantsByCityWithOnline() { return merchantByCity.getMerchantsByCityWithOnline(); }
+
+    public Map<String, Set<Long>> getMerchantByCity() { return merchantByCity.getMerchantsByCity(); }
+
+    public Set<Long> getOnlineMerchants() { return merchantByCity.getMerchantWithOnline(); }
 
     public void clearCache() {
         reporters.forEach(n -> n.clearCache());
