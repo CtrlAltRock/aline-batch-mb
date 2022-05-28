@@ -95,6 +95,8 @@ public class ReportsContainer {
 
     public Set<Long> getOnlineMerchants() { return merchantByCity.getMerchantWithOnline(); }
 
+    public AbstractMap<String, AtomicLong> getAfterEightPm() { return loca.getAfterEightPm(); }
+
     public void clearCache() {
         reporters.forEach(n -> n.clearCache());
     }

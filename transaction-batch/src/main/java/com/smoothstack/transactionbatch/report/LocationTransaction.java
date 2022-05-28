@@ -52,7 +52,11 @@ public class LocationTransaction implements ReportUtils {
         if (checkTimeTransaction(amount, time)) return;
 
         if (!afterEightPM.containsKey(location)) {
-            afterEightPM.put(location, new AtomicLong());
+            synchronized (this.afterEightPM) {
+                if (!afterEightPM.containsKey(location)) {
+                    afterEightPM.put(location, new AtomicLong());
+                }
+            }
         }
 
         afterEightPM.get(location).getAndIncrement();
@@ -68,7 +72,7 @@ public class LocationTransaction implements ReportUtils {
         items.forEach((n) -> {
             String location = "ONLINE";
             
-            if (!n.getCity().matches("ONLINE") && !n.getZip().isBlank()) {
+            if (!n.getCity().replaceAll("\\s", "").equals("ONLINE") && !n.getZip().isBlank()) {
                 location = n.getZip().substring(0, n.getZip().length() - 2);
                 makeZipTransact(Integer.parseInt(location));
                 makeCityTransact(n.getCity());
