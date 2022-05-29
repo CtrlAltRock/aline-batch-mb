@@ -20,6 +20,9 @@ import com.thoughtworks.xstream.XStream;
 
 import org.springframework.batch.item.ItemWriter;
 
+import io.micrometer.core.annotation.Timed;
+
+@Timed
 public class CardsWriter implements ItemWriter<TransactRead> {
     private final CardGenerator cardGenerator = CardGenerator.getInstance();
 

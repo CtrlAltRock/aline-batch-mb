@@ -7,7 +7,6 @@ import java.util.List;
 import com.smoothstack.transactionbatch.dto.outputdto.ReportBase;
 import com.smoothstack.transactionbatch.report.ReportsContainer;
 
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -28,7 +27,7 @@ public class TransactionTypeTests {
             .toList().get(0);
 
         assertEquals("Swipe Transaction", report.getTitle());
-        assertEquals("2862", report.getReport());
+        assertEquals("2863", report.getReport());
     }
 
     @Test

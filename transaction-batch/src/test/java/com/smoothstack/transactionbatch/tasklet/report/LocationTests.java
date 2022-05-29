@@ -6,6 +6,7 @@ import java.util.stream.Collectors;
 import static org.junit.jupiter.api.Assertions.*;
 
 import com.smoothstack.transactionbatch.dto.outputdto.LocationReport;
+import com.smoothstack.transactionbatch.dto.outputdto.ReportBase;
 import com.smoothstack.transactionbatch.report.ReportsContainer;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -43,5 +44,18 @@ public class LocationTests {
         LocationReport location = zipReports.get(0);
 
         assertEquals("Zip: 91750", location.getLocation());
+    }
+
+    @Test
+    public void afterEightPmTest() {
+        List<ReportBase> reports = TransactionsAfterEight.generateReports(reportsContainer.getAfterEightPm())
+            .collect(Collectors.toList());
+
+        assertEquals(10, reports.size());
+
+        ReportBase report = reports.get(0);
+
+        assertEquals("91750", report.getTitle());
+        assertEquals("3346", report.getReport());
     }
 }

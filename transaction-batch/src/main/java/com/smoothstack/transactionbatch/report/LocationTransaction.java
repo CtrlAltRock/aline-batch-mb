@@ -1,11 +1,12 @@
 package com.smoothstack.transactionbatch.report;
 
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.AbstractMap;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Stream;
 
-import com.smoothstack.transactionbatch.dto.LocationDto;
 import com.smoothstack.transactionbatch.model.TransactRead;
 
 // Handle transactions by zip and by city
@@ -14,9 +15,13 @@ public class LocationTransaction implements ReportUtils {
 
     private final AbstractMap<String, AtomicLong> transactByCity = new ConcurrentHashMap<>();
 
+    private final AbstractMap<String, AtomicLong> afterEightPM = new ConcurrentHashMap<>();
+
     public AbstractMap<Integer, AtomicLong> getZipTransacts() { return transactByZip; }
 
     public AbstractMap<String, AtomicLong> getCityTransacts() { return transactByCity; }
+
+    public AbstractMap<String, AtomicLong> getAfterEightPm() { return afterEightPM; }
 
     public void makeZipTransact(int zip) {
         if (!transactByZip.containsKey(zip)) {
@@ -43,19 +48,37 @@ public class LocationTransaction implements ReportUtils {
         transactByCity.get(city).incrementAndGet();
     }
 
+    public void makeTimeTransact(String location, BigDecimal amount, LocalDateTime time) {
+        if (checkTimeTransaction(amount, time)) return;
+
+        if (!afterEightPM.containsKey(location)) {
+            synchronized (this.afterEightPM) {
+                if (!afterEightPM.containsKey(location)) {
+                    afterEightPM.put(location, new AtomicLong());
+                }
+            }
+        }
+
+        afterEightPM.get(location).getAndIncrement();
+    }
+
+    public boolean checkTimeTransaction(BigDecimal amount, LocalDateTime time) {
+        return (time.getHour() >= 20 && amount.compareTo(new BigDecimal("100.00")) != -1) ? true : false;
+    }
+
     @Override
     public void addItems(Stream<? extends TransactRead> items) {
         // First filter out online transactions
-        items.filter(n -> (!n.getZip().isBlank() && !n.getCity().isBlank()))
-        // Get desired information from remaining objects and put into POJO
-        .map(n -> {
-            String oldZip = n.getZip();
-            int zip = Integer.parseInt(oldZip.substring(0, oldZip.length() - 2));
-            return new LocationDto(zip, n.getCity());
-        })
-        .forEach(n -> {
-            makeZipTransact(n.getZip());
-            makeCityTransact(n.getCity());
+        items.forEach((n) -> {
+            String location = "ONLINE";
+            
+            if (!n.getCity().replaceAll("\\s", "").equals("ONLINE") && !n.getZip().isBlank()) {
+                location = n.getZip().substring(0, n.getZip().length() - 2);
+                makeZipTransact(Integer.parseInt(location));
+                makeCityTransact(n.getCity());
+            }
+
+            makeTimeTransact(location, n.getAmount(), n.getDate());              
         });
     } 
 

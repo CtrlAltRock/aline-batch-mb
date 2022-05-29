@@ -31,5 +31,6 @@ public class CreateReports {
 
     public void clearCache() { reportsContainer.clearCache(); }
 
-    public ReportsContainer getReports() { return reportsContainer; }
+    public ReportsContainer getReports() {
+        return reportsContainer; }
 }
